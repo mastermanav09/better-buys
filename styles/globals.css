@@ -19,3 +19,15 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.card {
+  @apply mb-5 block rounded-lg border border-gray-200 shadow-md;
+}
+
+.primary-button {
+  @apply rounded  sm:py-2 sm:px-4 py-[0.4rem] px-2 shadow outline-none bg-slate-600 hover:bg-slate-500 active:bg-slate-400 text-[0.65rem] sm:text-xs  text-white;
+}
+
+.dropdown-link {
+  @apply flex p-2 hover:bg-gray-200 rounded-md cursor-pointer;
+}
