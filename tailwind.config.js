@@ -5,7 +5,12 @@ module.exports = {
     "./components/**/*.{js, ts, jsx, tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      screens: {
+        "sm-max": { max: "640px" },
+        "xs-max": { max: "360px" },
+      },
+    },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar"), require("@tailwindcss/forms")],
 };
