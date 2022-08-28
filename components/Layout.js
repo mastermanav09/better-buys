@@ -21,9 +21,9 @@ const Layout = ({ children }) => {
   }, [cartItems]);
 
   const logoutHandler = () => {
+    signOut({ callbackUrl: "/login" });
     Cookies.remove("cart");
     dispatch(cartActions.resetCart());
-    signOut({ callbackUrl: "/login" });
   };
 
   return (
@@ -33,6 +33,7 @@ const Layout = ({ children }) => {
         limit={1}
         autoClose={2500}
         hideProgressBar={false}
+        className="text-xs md:text-sm"
       />
 
       <div className="flex min-h-screen flex-col">

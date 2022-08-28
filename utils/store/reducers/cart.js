@@ -5,10 +5,6 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: {
     cartItems: Cookie.get("cart") ? JSON.parse(Cookie.get("cart")) : [],
-    shippingAddress: {
-      location: {},
-    },
-    paymentMethod: "",
   },
 
   reducers: {

@@ -1,19 +1,61 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import CheckoutWizard from "../components/CheckoutWizard";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { saveShippingAddress } from "../utils/store/reducers/user";
+import { useRouter } from "next/router";
 
 const Shipping = () => {
   const {
     handleSubmit,
     register,
     formState: { errors },
+    setValue,
   } = useForm();
 
+  const router = useRouter();
+  const userShippingdata = useSelector((state) => state.user.shippingAddress);
+
+  useEffect(() => {
+    if (Object.keys(userShippingdata).length !== 0) {
+      const name = userShippingdata.fullName.split(" ");
+      const firstName = name[0];
+      const lastName = name[1];
+
+      setValue("firstName", firstName);
+      setValue("lastName", lastName);
+      setValue("address", userShippingdata.address);
+      setValue("city", userShippingdata.city);
+      setValue("postalCode", userShippingdata.postalCode);
+      setValue("state", userShippingdata.state);
+    }
+  }, [setValue, userShippingdata]);
+
   const dispatch = useDispatch();
-  const submitHandler = ({ fullName, address, city, postalCode, country }) => {
-    dispatch();
+  const submitHandler = ({
+    firstName,
+    lastName,
+    address,
+    city,
+    postalCode,
+    state,
+  }) => {
+    const fullName = firstName + lastName;
+
+    dispatch(
+      saveShippingAddress({
+        userShippingdata: {
+          fullName,
+          address,
+          city,
+          postalCode,
+          state,
+        },
+      })
+    );
+
+    router.push("/payment");
   };
 
   return (
@@ -31,13 +73,13 @@ const Shipping = () => {
                   <div className="grid grid-cols-6 gap-6">
                     <div className="col-span-6 sm:col-span-3">
                       <label
-                        htmlForFor="first-name"
+                        htmlFor="first-name"
                         className="text-sm font-medium text-gray-700 flex items-center"
                       >
                         First name
-                        {errors.fullName && (
+                        {errors.firstName && (
                           <div className="text-red-500 text-xs mx-2">
-                            {errors.fullName.message}
+                            {errors.firstName.message}
                           </div>
                         )}
                       </label>
@@ -59,9 +101,9 @@ const Shipping = () => {
                         className="text-sm font-medium text-gray-700 flex items-center"
                       >
                         Last name
-                        {errors.fullName && (
+                        {errors.lastName && (
                           <div className="text-red-500 text-xs mx-2">
-                            {errors.fullName.message}
+                            {errors.lastName.message}
                           </div>
                         )}
                       </label>
@@ -128,21 +170,21 @@ const Shipping = () => {
 
                     <div className="col-span-6 sm:col-span-3 lg:col-span-2">
                       <label
-                        htmlFor="region"
+                        htmlFor="state"
                         className="text-sm font-medium text-gray-700 flex items-center"
                       >
                         State / Province
-                        {errors.region && (
+                        {errors.state && (
                           <div className="text-red-500 text-xs mx-2">
-                            {errors.region.message}
+                            {errors.state.message}
                           </div>
                         )}
                       </label>
                       <input
                         type="text"
-                        name="region"
-                        id="region"
-                        {...register("region", {
+                        name="state"
+                        id="state"
+                        {...register("state", {
                           required: "Please enter your region.",
                         })}
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -191,3 +233,5 @@ const Shipping = () => {
 };
 
 export default Shipping;
+
+Shipping.auth = true;
