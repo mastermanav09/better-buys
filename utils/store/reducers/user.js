@@ -26,6 +26,7 @@ export const auth = createAsyncThunk("user/auth", async (data) => {
   const password = data.password;
 
   data.setIsLoading(true);
+
   try {
     toast.clearWaitingQueue();
     const res = await signIn("credentials", {
@@ -34,10 +35,12 @@ export const auth = createAsyncThunk("user/auth", async (data) => {
       password,
     });
 
+    console.log(res);
     if (res.error) {
       throw new Error(res.error);
     }
   } catch (error) {
+    console.log(error);
     toast.error(getError(error));
     toast.clearWaitingQueue();
   }

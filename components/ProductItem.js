@@ -4,21 +4,9 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { cartActions } from "../utils/store/reducers/cart";
 
-const ProductItem = ({ product }) => {
+const ProductItem = ({ product, addToCartHandler }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-
-  const addToCartHandler = () => {
-    const existItem = cartItems.find((x) => x.slug === product.slug);
-
-    const quantity = existItem ? existItem.quantity + 1 : 1;
-
-    dispatch(
-      cartActions.addItem({
-        product: { ...product, quantity },
-      })
-    );
-  };
 
   return (
     <div className="card">
@@ -46,8 +34,8 @@ const ProductItem = ({ product }) => {
         <button
           className="primary-button my-1 disabled:cursor-default disabled:bg-gray-300"
           type="button"
-          onClick={addToCartHandler}
-          disabled={product.countInStock === 0}
+          onClick={() => addToCartHandler(product)}
+          // disabled={product.countInStock === 0}
         >
           {product.countInStock === 0 ? "Out of Stock" : "Add to cart"}
         </button>

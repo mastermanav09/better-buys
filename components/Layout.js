@@ -30,8 +30,8 @@ const Layout = ({ children }) => {
     <>
       <ToastContainer
         position="bottom-center"
-        limit={1}
-        autoClose={2500}
+        limit={2}
+        autoClose={2000}
         hideProgressBar={false}
         className="text-xs md:text-sm"
       />
