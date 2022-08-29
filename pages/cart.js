@@ -8,18 +8,38 @@ import Cross from "../components/svg/Cross";
 import { cartActions } from "../utils/store/reducers/cart";
 import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Cart = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const router = useRouter();
   const dispatch = useDispatch();
+
   const removeItemHandler = (item) => {
     dispatch(cartActions.removeItem(item));
+    toast.success("Product removed from the cart");
   };
 
-  const updateCartHandler = (item, qty) => {
+  const updateCartHandler = async (item, qty) => {
     const quantity = Number(qty);
-    dispatch(cartActions.addItem({ product: { ...item, quantity } }));
+
+    try {
+      const { data } = await axios.get(`api/products/${item._id}`);
+
+      if (data.countInStock < quantity) {
+        toast.info("Sorry, Product is out of stock");
+        toast.clearWaitingQueue();
+        return;
+      }
+
+      dispatch(cartActions.addItem({ product: { ...item, quantity } }));
+
+      toast.success("Product updated in the cart");
+      toast.clearWaitingQueue();
+    } catch (error) {
+      toast.error("Cannot add product!");
+    }
   };
 
   return (

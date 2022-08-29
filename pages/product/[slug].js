@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import Head from "next/head";
-import data from "../../utils/data";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import { cartActions } from "../../utils/store/reducers/cart";
 import { useRouter } from "next/router";
+import db from "../../utils/db";
+import Product from "../../models/product";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const ProductItem = (props) => {
   const { product } = props;
@@ -12,29 +15,42 @@ const ProductItem = (props) => {
   const router = useRouter();
   const cartItems = useSelector((state) => state.cart.cartItems);
 
-  const addToCartHandler = async () => {
+  const checkAvailability = async () => {
     const existItem = cartItems.find((x) => x.slug === product.slug);
-
     const quantity = existItem ? existItem.quantity + 1 : 1;
 
-    // if (data.countInStock < quantity) {
-    //   return toast.error("Sorry. Product is out of stock");
-    // }
+    try {
+      const { data } = await axios.get(`/api/products/${product._id}`);
 
-    dispatch(
-      cartActions.addItem({
-        product: { ...product, quantity },
-      })
-    );
+      if (data.countInStock < quantity) {
+        toast.info("Sorry, Product is out of stock");
+        toast.clearWaitingQueue();
+        return;
+      }
+
+      dispatch(
+        cartActions.addItem({
+          product: { ...product, quantity },
+        })
+      );
+
+      toast.success("Added to cart");
+      toast.clearWaitingQueue();
+      return true;
+    } catch (error) {
+      toast.error("Cannot add product!");
+    }
+  };
+
+  const addToCartHandler = async () => {
+    await checkAvailability();
   };
 
   const buyNowHandler = async () => {
-    dispatch(
-      cartActions.addItem({
-        product: { ...product, quantity: 1 },
-      })
-    );
-    router.push("/cart");
+    const res = await checkAvailability();
+    if (res) {
+      router.push("/cart");
+    }
   };
 
   return (
@@ -73,14 +89,14 @@ const ProductItem = (props) => {
             <button
               className="primary-button disabled:cursor-default disabled:bg-gray-300 xl:text-base"
               onClick={addToCartHandler}
-              disabled={product.countInStock === 0}
+              // disabled={product.countInStock === 0}
             >
               {product.countInStock === 0 ? "Out of Stock" : "Add to cart"}
             </button>
             <button
               className="rounded shadow outline-none bg-blue-700 hover:bg-blue-600 active:bg-blue-500 text-[0.65rem] sm:text-xs  text-white cursor-pointer disabled:cursor-default disabled:bg-gray-300 xl:text-base"
               onClick={buyNowHandler}
-              disabled={product.countInStock === 0}
+              // disabled={product.countInStock === 0}
             >
               Buy Now
             </button>
@@ -121,9 +137,10 @@ export default ProductItem;
 export async function getServerSideProps(context) {
   const query = context.query;
   const { slug } = query;
-  const { products } = JSON.parse(data);
 
-  const product = products.find((product) => product.slug === slug);
+  await db.connect();
+  const product = await Product.findOne({ slug }).lean();
+  await db.disconnect();
 
   if (!product) {
     return {
@@ -136,7 +153,7 @@ export async function getServerSideProps(context) {
 
   return {
     props: {
-      product,
+      product: db.convertDocToObj(product),
     },
   };
 }
