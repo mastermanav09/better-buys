@@ -48,7 +48,7 @@ const Cart = () => {
         <title>Shopping Cart</title>
       </Head>
 
-      <h1 className="mb-4 flex items-center text-lg md:text-2xl lg:text-3xl  xl:text-4xl">
+      <h1 className="mb-4 flex items-center text-xl md:text-2xl lg:text-3xl  xl:text-4xl font-semibold">
         Shopping Cart <CartSvg />
       </h1>
       {cartItems.length == 0 ? (
@@ -147,7 +147,7 @@ const Cart = () => {
               <li>
                 <button
                   className="primary-button w-full"
-                  onClick={() => router.push("/shipping")}
+                  onClick={() => router.push("login?redirect=/shipping")}
                 >
                   Checkout
                 </button>

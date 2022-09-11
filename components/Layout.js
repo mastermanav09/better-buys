@@ -17,13 +17,16 @@ const Layout = ({ children }) => {
   const [cartItemsCount, setCartItemsCount] = useState(0);
 
   useEffect(() => {
-    setCartItemsCount(cartItems.reduce((a, c) => a + c.quantity, 0));
+    if (Array.isArray(cartItems)) {
+      setCartItemsCount(cartItems.reduce((a, c) => a + c.quantity, 0));
+    }
   }, [cartItems]);
 
   const logoutHandler = () => {
     signOut({ callbackUrl: "/login" });
     Cookies.remove("cart");
     dispatch(cartActions.resetCart());
+    dispatch(cartActions.resetUserOrderDetails());
   };
 
   return (
@@ -65,7 +68,10 @@ const Layout = ({ children }) => {
                       </DropdownLink>
                     </Menu.Item>
                     <Menu.Item>
-                      <DropdownLink className="dropdown-link" href="/my-orders">
+                      <DropdownLink
+                        className="dropdown-link"
+                        href="/order-history"
+                      >
                         My Orders
                       </DropdownLink>
                     </Menu.Item>
@@ -96,20 +102,3 @@ const Layout = ({ children }) => {
 };
 
 export default Layout;
-
-export async function getServerSideProps(context) {
-  const session = await getSession({ req: context.req });
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-}

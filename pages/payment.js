@@ -5,33 +5,54 @@ import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { savePaymentMethod } from "../utils/store/reducers/user";
+import LoadingSpinner from "../components/svg/LoadingSpinner";
+import { getSession } from "next-auth/react";
+import { setUserDetails } from "../utils/store/reducers/user";
+import Wallet from "../components/svg/Wallet";
 
 const Payment = () => {
   const router = useRouter();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
   const { paymentMethod, shippingAddress } = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   const submitHandler = (event) => {
     event.preventDefault();
-
     if (!selectedPaymentMethod) {
       toast.error("Payment method is required!");
       toast.clearWaitingQueue();
       return;
     }
 
-    // dispatch(savePaymentMethod(selectedPaymentMethod));
-    router.push("/placeorder");
+    dispatch(
+      savePaymentMethod({
+        paymentMethod: selectedPaymentMethod,
+        setIsLoading,
+        router,
+      })
+    );
   };
 
   useEffect(() => {
-    //   if (!shippingAddress.address) {
-    //     return router.push("/shipping");
-    //   }
+    let session;
+    const authenticateUser = async () => {
+      session = await getSession();
+      if (session) {
+        dispatch(setUserDetails());
+      }
+    };
+
+    authenticateUser();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!shippingAddress) {
+      return router.push("/shipping");
+    }
 
     setSelectedPaymentMethod(paymentMethod || "");
-  }, [paymentMethod, router, shippingAddress.address]);
+  }, [paymentMethod, router, shippingAddress]);
 
   return (
     <>
@@ -40,8 +61,11 @@ const Payment = () => {
       </Head>
       <CheckoutWizard activeStep={2} />
       <form className="mx-auto max-w-screen-lg" onSubmit={submitHandler}>
-        <h1 className="mb-4 text-xl">Payment Method</h1>
-        {["PayPal", "Stripe", "Cash On Delivery"].map((payment) => (
+        <div className="flex items-center mb-4">
+          <h1 className="text-xl font-semibold">Payment Method</h1>
+          <Wallet />
+        </div>
+        {["Paytm", "Stripe", "Cash On Delivery"].map((payment) => (
           <div key={payment} className="mb-4">
             <input
               name="paymentMethod"
@@ -67,7 +91,11 @@ const Payment = () => {
           </button>
 
           <button className="primary-button" type="submit">
-            Next
+            {isLoading ? (
+              <LoadingSpinner className="mx-auto w-[1.65rem] h-4 text-slate-400 animate-spin dark:text-purple-600 fill-white" />
+            ) : (
+              "Next"
+            )}
           </button>
         </div>
       </form>
@@ -75,4 +103,5 @@ const Payment = () => {
   );
 };
 
+Payment.auth = true;
 export default Payment;

@@ -4,6 +4,7 @@ import store from "../utils/store/store";
 import { Provider as StoreProvider } from "react-redux";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import PageLoader from "../components/svg/PageLoader";
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -35,7 +36,7 @@ function Auth({ children }) {
   });
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <PageLoader />;
   }
 
   return children;

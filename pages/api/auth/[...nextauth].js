@@ -45,18 +45,25 @@ export default NextAuth({
             "credentials.email": credentials.email,
           });
 
+          if (!user) {
+            throw new Error("Invalid email or password");
+          }
+
           await db.disconnect();
+
           if (
             user &&
             bcrypt.compareSync(credentials.password, user.credentials.password)
           ) {
             return {
-              _id: user.credentials._id,
+              _id: user._id,
               name: user.credentials.name,
               email: user.credentials.email,
               image: "null",
               isAdmin: user.credentials.isAdmin,
             };
+          } else {
+            throw new Error("Password is incorrect");
           }
         } catch (error) {
           throw new Error("Invalid email or password");
