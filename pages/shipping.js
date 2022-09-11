@@ -1,10 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import CheckoutWizard from "../components/CheckoutWizard";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { saveShippingAddress } from "../utils/store/reducers/user";
 import { useRouter } from "next/router";
+import LoadingSpinner from "../components/svg/LoadingSpinner";
+import { getSession } from "next-auth/react";
+import { setUserDetails } from "../utils/store/reducers/user";
+import Address from "../components/svg/Address";
 
 const Shipping = () => {
   const {
@@ -16,9 +20,23 @@ const Shipping = () => {
 
   const router = useRouter();
   const userShippingdata = useSelector((state) => state.user.shippingAddress);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (Object.keys(userShippingdata).length !== 0) {
+    let session;
+    const authenticateUser = async () => {
+      session = await getSession();
+      if (session) {
+        dispatch(setUserDetails());
+      }
+    };
+
+    authenticateUser();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (userShippingdata && Object.keys(userShippingdata).length !== 0) {
       const name = userShippingdata.fullName.split(" ");
       const firstName = name[0];
       const lastName = name[1];
@@ -32,7 +50,6 @@ const Shipping = () => {
     }
   }, [setValue, userShippingdata]);
 
-  const dispatch = useDispatch();
   const submitHandler = ({
     firstName,
     lastName,
@@ -41,7 +58,7 @@ const Shipping = () => {
     postalCode,
     state,
   }) => {
-    const fullName = firstName + lastName;
+    const fullName = firstName + " " + lastName;
 
     dispatch(
       saveShippingAddress({
@@ -52,10 +69,11 @@ const Shipping = () => {
           postalCode,
           state,
         },
+
+        setIsLoading,
+        router,
       })
     );
-
-    router.push("/payment");
   };
 
   return (
@@ -64,8 +82,13 @@ const Shipping = () => {
         <title>Shipping Address</title>
       </Head>
       <CheckoutWizard activeStep={1} />
+
       <div className="mt-10 sm:mt-0">
         <div className="max-w-4xl mx-auto">
+          <div className="flex mb-4 items-center">
+            <h1 className="text-xl font-semibold">Add your address</h1>
+            <Address />
+          </div>
           <div className="mt-5">
             <form onSubmit={handleSubmit(submitHandler)}>
               <div className="overflow-hidden rounded-md">
@@ -90,6 +113,10 @@ const Shipping = () => {
                         autoFocus
                         {...register("firstName", {
                           required: "Please enter your first name.",
+                          minLength: {
+                            value: 3,
+                            message: "Name should be of at least 3 chars.",
+                          },
                         })}
                         className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       />
@@ -220,7 +247,11 @@ const Shipping = () => {
                     type="submit"
                     className="inline-flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
-                    Save
+                    {isLoading ? (
+                      <LoadingSpinner className="mx-auto w-[1.9rem] h-5 text-slate-400 animate-spin dark:text-purple-600 fill-white" />
+                    ) : (
+                      "Save"
+                    )}
                   </button>
                 </div>
               </div>

@@ -18,6 +18,7 @@
     "mongoose": "^6.5.3",
     "next": "12.2.5",
     "next-auth": "^4.10.3",
+    "paytmchecksum": "^1.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.34.2",

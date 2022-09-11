@@ -16,6 +16,11 @@ const ProductItem = (props) => {
   const cartItems = useSelector((state) => state.cart.cartItems);
 
   const checkAvailability = async () => {
+    if (!Array.isArray(cartItems)) {
+      toast.error("Cart items do not match!");
+      return;
+    }
+
     const existItem = cartItems.find((x) => x.slug === product.slug);
     const quantity = existItem ? existItem.quantity + 1 : 1;
 

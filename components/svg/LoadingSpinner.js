@@ -1,11 +1,11 @@
 import React from "react";
 
-const Loader = () => {
+const LoadingSpinner = (props) => {
   return (
     <div role="status">
       <svg
         aria-hidden="true"
-        className="mx-auto w-6 h-6 text-white animate-spin dark:text-purple-600 fill-purple-600"
+        className={props.className}
         viewBox="0 0 100 101"
         fill="none"
       >
@@ -23,4 +23,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default LoadingSpinner;

@@ -5,6 +5,7 @@ import { getError } from "../../error";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { cartActions } from "./cart";
 
 const haveSameData = function (obj1, obj2) {
   const obj1Length = Object.keys(obj1).length;
@@ -21,7 +22,7 @@ const haveSameData = function (obj1, obj2) {
   return false;
 };
 
-export const auth = createAsyncThunk("user/auth", async (data) => {
+export const login = createAsyncThunk("user/login", async (data) => {
   const email = data.email;
   const password = data.password;
 
@@ -29,86 +30,174 @@ export const auth = createAsyncThunk("user/auth", async (data) => {
 
   try {
     toast.clearWaitingQueue();
+
     const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
     });
 
-    console.log(res);
     if (res.error) {
       throw new Error(res.error);
     }
   } catch (error) {
-    console.log(error);
-    toast.error(getError(error));
     toast.clearWaitingQueue();
+    toast.error(getError(error));
   }
 
   data.setIsLoading(false);
 });
 
+export const signup = createAsyncThunk("user/signup", async (data) => {
+  const email = data.email;
+  const password = data.password;
+  const name = data.username;
+
+  console.log(email);
+  data.setIsLoading(true);
+
+  try {
+    if (!email || !password || !name) {
+      throw new Error("Credentials required!");
+    }
+
+    toast.clearWaitingQueue();
+
+    await axios.post("/api/auth/signup", {
+      name,
+      email,
+      password,
+    });
+
+    const res = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+
+    if (res.error) {
+      throw new Error(res.error);
+    }
+
+    data.router.replace("/");
+  } catch (error) {
+    toast.clearWaitingQueue();
+    toast.error(getError(error));
+  }
+
+  data.setIsLoading(false);
+});
+
+export const setUserDetails = createAsyncThunk(
+  "user/setUserDetails",
+  async (data, { getState, dispatch }) => {
+    try {
+      const { data: res } = await axios({
+        method: "GET",
+        url: "/api/details/getUserDetails",
+      });
+
+      dispatch(userSlice.actions.setUser(res));
+    } catch (error) {
+      if (error || error.message) {
+        toast.error(getError(error));
+      }
+    }
+  }
+);
+
 export const saveShippingAddress = createAsyncThunk(
   "user/saveShippingAddress",
-  async (data, { getState }) => {
+  async (data, { getState, dispatch }) => {
     const state = getState();
     const userShippingAddress = state.user.shippingAddress;
 
+    data.setIsLoading(true);
+
     if (haveSameData(userShippingAddress, data.userShippingdata)) {
+      data.router.push("/payment");
       return;
     }
 
-    const token = Cookies.get("next-auth.session-token");
-
-    // data.setIsLoading(true);
     try {
-      const res = await axios({
+      const { data: res } = await axios({
         method: "POST",
-        url: "/api/details/shippingAddress",
+        url: "/api/details/setShippingAddress",
         data: data.userShippingdata,
-        headers: {
-          Authorization: "Bearer " + token,
-        },
       });
 
-      // userActions.saveShippingAddress(data.userShippingdata);
+      dispatch(userSlice.actions.saveShippingAddress(res));
+      data.router.push("/payment");
     } catch (error) {
-      console.log(error);
+      toast.error(getError(error));
+      toast.clearWaitingQueue();
     }
 
-    // data.setIsLoading(false);
+    data.setIsLoading(false);
   }
 );
 
 export const savePaymentMethod = createAsyncThunk(
   "user/savePaymentMethod",
-  async (data, { getState }) => {
+  async (data, { getState, dispatch }) => {
     const state = getState();
     const userPaymentMethod = state.user.paymentMethod;
 
-    if (data.paymentMethod !== "" && userPaymentMethod === data.paymentMethod) {
+    if (data !== "" && userPaymentMethod === data) {
       return;
     }
 
-    const token = Cookies.get("next-auth.session-token");
-
-    // data.setIsLoading(true);
+    data.setIsLoading(true);
     try {
-      const res = await axios({
+      const { data: res } = await axios({
         method: "POST",
-        url: "/api/details/paymentMethod",
-        data: data.paymentMethod,
-        headers: {
-          Authorization: "Bearer " + token,
+        url: "/api/details/setPaymentMethod",
+        data: {
+          method: data.paymentMethod,
         },
       });
 
-      // userActions.saveShippingAddress(data.userShippingdata);
+      dispatch(userSlice.actions.savePaymentMethod(res.paymentMethod));
+      data.router.push("/placeorder");
     } catch (error) {
-      console.log(error);
+      toast.clearWaitingQueue();
+      toast.error(getError(error));
     }
 
-    // data.setIsLoading(false);
+    data.setIsLoading(false);
+  }
+);
+
+export const placeOrder = createAsyncThunk(
+  "user/placeOrder",
+  async ({ shippingData, setIsLoading, router }, { dispatch }) => {
+    try {
+      setIsLoading(true);
+      const { data: res } = await axios({
+        method: "POST",
+        url: "/api/orders/",
+        data: {
+          orderItems: shippingData.orderItems,
+          shippingAddress: shippingData.userShippingdata,
+          paymentMethod: shippingData.paymentMethod,
+          itemsPrice: shippingData.itemsPrice,
+          shippingPrice: shippingData.shippingPrice,
+          taxPrice: shippingData.taxPrice,
+          totalPrice: shippingData.totalPrice,
+        },
+      });
+
+      router.push(`/orders/${res._id}`);
+
+      Cookies.remove("cart");
+
+      setTimeout(() => {
+        dispatch(cartActions.resetCart());
+      }, 550);
+    } catch (error) {
+      toast.clearWaitingQueue();
+      toast.error(getError(error));
+    }
   }
 );
 
@@ -121,7 +210,21 @@ const userSlice = createSlice({
   },
 
   reducers: {
-    setUser(state, action) {},
+    setUser(state, action) {
+      state.credentials = action.payload.credentials;
+
+      const isShippingDataPresent = Object.values(
+        action.payload.shippingAddress
+      ).every((val) => val !== null);
+
+      if (isShippingDataPresent) {
+        state.shippingAddress = action.payload.shippingAddress;
+      } else {
+        state.shippingAddress = {};
+      }
+
+      state.paymentMethod = action.payload.paymentMethod;
+    },
 
     saveShippingAddress(state, action) {
       state.shippingAddress = {

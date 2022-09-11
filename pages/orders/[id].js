@@ -1,0 +1,227 @@
+import React, { useState } from "react";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import PageLoader from "../../components/svg/PageLoader";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchOrder, orderActions } from "../../utils/store/reducers/order";
+import Link from "next/link";
+import Image from "next/image";
+import PaytmButton from "../../components/PaytmButton";
+import { initiatePayment } from "../../utils/store/reducers/order";
+import Script from "next/script";
+import { getSession } from "next-auth/react";
+import { setUserDetails } from "../../utils/store/reducers/user";
+
+const Order = () => {
+  const { query } = useRouter();
+  const orderId = query.id;
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const { loading, order, error, successPay, loadingPay } = useSelector(
+    (state) => state.order
+  );
+  const paymentMethod = useSelector((state) => state.user.paymentMethod);
+
+  useEffect(() => {
+    let session;
+    const authenticateUser = async () => {
+      session = await getSession();
+      if (session) {
+        dispatch(setUserDetails());
+      }
+    };
+
+    authenticateUser();
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!order._id || successPay || (order._id && order._id !== orderId)) {
+      dispatch(fetchOrder({ orderId }));
+
+      if (successPay) {
+        dispatch(orderActions.payReset());
+      }
+    }
+  }, [dispatch, order._id, orderId, successPay]);
+
+  const initiatePaymentHandler = async () => {
+    dispatch(
+      initiatePayment({
+        orderData: {
+          orderItems: order.orderItems,
+          orderId: order._id.toString(),
+          totalPrice: order.totalPrice,
+          userId: order.user.toString(),
+          paymentMethod: paymentMethod,
+        },
+
+        router,
+      })
+    );
+  };
+
+  if (loading) {
+    return <PageLoader />;
+  }
+
+  return (
+    <>
+      <Head>
+        <title>{`Order ${orderId}`}</title>
+      </Head>
+      <Script
+        type="application/javascript"
+        src={`${process.env.NEXT_PUBLIC_PAYTM_HOST}/merchantpgpui/checkoutjs/merchants/${process.env.NEXT_PUBLIC_PAYTM_MID}.js`}
+        crossorigin="anonymous"
+      />
+
+      <div className="flex mb-2">
+        <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-semibold">
+          My Orders
+        </h1>
+      </div>
+      <div>
+        <h2 className="mb-4 md:text-lg text-sm">{`Order ${orderId}`}</h2>
+        {error && <div className="xs-max:text-sm alert-error">{error}</div>}
+      </div>
+      {!error && (
+        <div className="grid md:grid-cols-4 md:gap-5">
+          <div className="overflow-x-auto md:col-span-3">
+            <div className="card p-5">
+              <h2 className="mb-2 text-lg">Shipping Address</h2>
+              <div>
+                {order.shippingAddress.fullName},{" "}
+                {order.shippingAddress.address}, {order.shippingAddress.city},{" "}
+                {order.shippingAddress.postalCode},{" "}
+                {order.shippingAddress.state}
+              </div>
+              {order.isDelivered ? (
+                <div className="alert-success">
+                  Delivered at{" "}
+                  {new Date(order.deliveredAt).toLocaleTimeString()}
+                  {", "}
+                  {new Date(order.deliveredAt)
+                    .toLocaleString("en-US", {
+                      month: "long",
+                      day: "2-digit",
+                      year: "numeric",
+                    })
+                    .toString()}{" "}
+                </div>
+              ) : (
+                <div className="alert-error">Not delivered</div>
+              )}
+            </div>
+
+            <div className="card p-5">
+              <h2 className="mb-2 text-lg">Payment Method</h2>
+              <div>{order.paymentMethod}</div>
+              {order.isPaid ? (
+                <div className="alert-success">
+                  Paid at {new Date(order.paidAt).toLocaleTimeString()}
+                  {", "}
+                  {new Date(order.paidAt)
+                    .toLocaleString("en-US", {
+                      month: "long",
+                      day: "2-digit",
+                      year: "numeric",
+                    })
+                    .toString()}{" "}
+                </div>
+              ) : (
+                <div className="alert-error">Not paid</div>
+              )}
+            </div>
+
+            <div className="card overflow-x-auto p-5">
+              <h2 className="mb-2 text-lg">Order Items</h2>
+              <table className="min-w-full">
+                <thead className="border-b">
+                  <tr>
+                    <th className="px-4 text-left">Item</th>
+                    <th className="p-4 text-right">Quantity</th>
+                    <th className="p-4 text-right">Price</th>
+                    <th className="p-4 text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {order.orderItems.map((item) => (
+                    <tr key={item._id} className="border-b">
+                      <td>
+                        <Link href={`/product/${item.slug}`}>
+                          <a className="flex items-center">
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              width={50}
+                              height={50}
+                            ></Image>
+                            &nbsp;
+                            {item.name}
+                          </a>
+                        </Link>
+                      </td>
+                      <td className="p-5 text-right">{item.quantity}</td>
+                      <td className="p-5 text-right">₹{item.price}</td>
+                      <td className="p-5 text-right">
+                        ₹{item.price * item.quantity}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div className="card p-5">
+              <h2 className="mb-2 text-lg">Order Summary</h2>
+              <ul>
+                <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Items</div>
+                    <div>₹{order.itemsPrice}</div>
+                  </div>
+                </li>
+                <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Tax</div>
+                    <div>₹{order.taxPrice}</div>
+                  </div>
+                </li>
+                <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Shipping</div>
+                    <div>₹{order.shippingPrice}</div>
+                  </div>
+                </li>
+
+                <li>
+                  <div className="mb-2 flex justify-between">
+                    <div>Total</div>
+                    <div>₹{order.totalPrice}</div>
+                  </div>
+                </li>
+
+                {!order.isPaid && (
+                  <li>
+                    <div className="w-full">
+                      <PaytmButton
+                        onClick={initiatePaymentHandler}
+                        isPending={loadingPay}
+                      />
+                    </div>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+Order.auth = true;
+export default Order;

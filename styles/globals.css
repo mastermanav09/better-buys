@@ -35,3 +35,40 @@ a {
 .dropdown-link {
   @apply flex p-2 hover:bg-gray-200 rounded-md cursor-pointer;
 }
+
+.page-loader {
+  border-top-color: #3498db;
+  -webkit-animation: spinner 1.5s linear infinite;
+  animation: spinner 1.5s linear infinite;
+}
+
+.center-loader {
+  position: absolute;
+  left: calc((100% - 30px) / 2);
+}
+
+.alert-error {
+  @apply my-3 rounded-lg bg-red-100 text-red-700 p-3;
+}
+
+.alert-success {
+  @apply my-3 rounded-lg bg-green-100 text-green-700 p-3;
+}
+
+@-webkit-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
