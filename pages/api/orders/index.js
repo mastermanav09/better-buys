@@ -37,7 +37,6 @@ const handler = async (req, res) => {
 
       res.status(error.statusCode).json(error);
     }
-    await db.disconnect();
   }
 };
 

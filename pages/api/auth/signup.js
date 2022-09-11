@@ -52,7 +52,6 @@ const handler = async (req, res) => {
       paymentMethod: null,
     });
 
-    console.log(newUser);
     const user = await newUser.save();
     res.status(201).json({
       message: "Created new user!",
@@ -62,7 +61,6 @@ const handler = async (req, res) => {
       isAdmin: user.isAdmin,
     });
   } catch (error) {
-    console.log(error);
     if (error?.statusCode === 422) {
       error.message = "User already exists!";
     } else {
@@ -75,8 +73,6 @@ const handler = async (req, res) => {
 
     res.status(error.statusCode).json(error);
   }
-
-  await db.disconnect();
 };
 
 export default handler;
