@@ -9,6 +9,7 @@ export const fetchOrder = createAsyncThunk(
   async (data, { dispatch }) => {
     try {
       dispatch(orderSlice.actions.fetchOrderRequest());
+
       const { data: res } = await axios.get(`/api/orders/${data.orderId}`);
       dispatch(orderSlice.actions.fetchSuccess(res));
     } catch (error) {

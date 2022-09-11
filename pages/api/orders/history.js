@@ -14,7 +14,7 @@ const handler = async (req, res) => {
       await db.connect();
 
       const orders = await Order.find({ user: user._id });
-      await db.disconnect();
+
       res.status(200).json({ orders: orders });
     } catch (error) {
       res.status(500).json({ message: "Couldn't get the orders." });

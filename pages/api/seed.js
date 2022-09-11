@@ -14,7 +14,6 @@ const handler = async (req, res) => {
   const products = JSON.parse(data).products;
   await Product.insertMany(products);
 
-  await db.disconnect();
   res.send({ message: "seeded successfully!" });
 };
 

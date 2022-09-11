@@ -145,7 +145,6 @@ export async function getServerSideProps(context) {
 
   await db.connect();
   const product = await Product.findOne({ slug }).lean();
-  await db.disconnect();
 
   if (!product) {
     return {
