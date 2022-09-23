@@ -187,17 +187,56 @@ export const placeOrder = createAsyncThunk(
         },
       });
 
-      router.push(`/orders/${res._id}`);
+      const redirectUser = async () => {
+        return new Promise((resolve, reject) => {
+          router.push(`/orders/${res._id}`);
+          resolve();
+        });
+      };
+
+      await redirectUser().then(() =>
+        setTimeout(() => {
+          dispatch(cartActions.resetCart());
+        }, 2000)
+      );
 
       Cookies.remove("cart");
-
-      setTimeout(() => {
-        dispatch(cartActions.resetCart());
-      }, 550);
     } catch (error) {
       toast.clearWaitingQueue();
       toast.error(getError(error));
     }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  "user/updateProfile",
+  async ({ userData, setIsLoading }, { dispatch }) => {
+    setIsLoading(true);
+    try {
+      await axios({
+        method: "PUT",
+        url: "/api/auth/update",
+        data: userData,
+      });
+
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: userData.email,
+        password: userData.password,
+      });
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      toast.clearWaitingQueue();
+      toast.success("Profile updated successfully!");
+    } catch (error) {
+      toast.clearWaitingQueue();
+      toast.error(getError(error));
+    }
+
+    setIsLoading(false);
   }
 );
 
@@ -207,6 +246,9 @@ const userSlice = createSlice({
     credentials: {},
     shippingAddress: {},
     paymentMethod: "",
+    ui: {
+      showSidebar: false,
+    },
   },
 
   reducers: {
@@ -235,6 +277,10 @@ const userSlice = createSlice({
 
     savePaymentMethod(state, action) {
       state.paymentMethod = action.payload;
+    },
+
+    toggleSidebar(state, action) {
+      state.ui.showSidebar = action.payload;
     },
   },
 });

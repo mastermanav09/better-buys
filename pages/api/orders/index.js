@@ -6,11 +6,8 @@ const handler = async (req, res) => {
   if (req.method === "POST") {
     try {
       const session = await getSession({ req });
-
       if (!session) {
-        const error = new Error();
-        error.statusCode = 401;
-        throw error;
+        return res.status(401).json({ message: "Sign in required!" });
       }
 
       const { user } = session;
@@ -25,17 +22,7 @@ const handler = async (req, res) => {
 
       res.status(201).json(order);
     } catch (error) {
-      if (error?.statusCode === 401) {
-        error.message = "Sign in required";
-      } else {
-        error.message = "Something went wrong.";
-      }
-
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-
-      res.status(error.statusCode).json(error);
+      res.status(500).json({ message: "Something went wrong!" });
     }
   }
 };
