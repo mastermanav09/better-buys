@@ -10,17 +10,26 @@ import Image from "next/image";
 import PaytmButton from "../../components/PaytmButton";
 import { initiatePayment } from "../../utils/store/reducers/order";
 import Script from "next/script";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { setUserDetails } from "../../utils/store/reducers/user";
+import { deliverOrder } from "../../utils/store/reducers/admin";
+import LoadingSpinner from "../../components/svg/LoadingSpinner";
 
 const Order = () => {
   const { query } = useRouter();
   const orderId = query.id;
+  const { data: session } = useSession();
   const router = useRouter();
   const dispatch = useDispatch();
-  const { loading, order, error, successPay, loadingPay } = useSelector(
-    (state) => state.order
-  );
+  const {
+    loading,
+    order,
+    error,
+    successPay,
+    loadingPay,
+    loadingDeliver,
+    successDeliver,
+  } = useSelector((state) => state.order);
   const paymentMethod = useSelector((state) => state.user.paymentMethod);
 
   useEffect(() => {
@@ -36,14 +45,23 @@ const Order = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!order._id || successPay || (order._id && order._id !== orderId)) {
+    if (
+      !order._id ||
+      successPay ||
+      successDeliver ||
+      (order._id && order._id !== orderId)
+    ) {
       dispatch(fetchOrder({ orderId }));
 
       if (successPay) {
         dispatch(orderActions.payReset());
       }
+
+      if (successDeliver) {
+        dispatch(orderActions.deliverReset());
+      }
     }
-  }, [dispatch, order._id, orderId, successPay]);
+  }, [dispatch, order._id, orderId, successPay, successDeliver]);
 
   const initiatePaymentHandler = async () => {
     dispatch(
@@ -59,6 +77,10 @@ const Order = () => {
         router,
       })
     );
+  };
+
+  const deliverOrderHandler = async () => {
+    dispatch(deliverOrder({ orderId: order._id }));
   };
 
   if (loading) {
@@ -212,6 +234,20 @@ const Order = () => {
                         isPending={loadingPay}
                       />
                     </div>
+                  </li>
+                )}
+                {session.user.isAdmin && order.isPaid && !order.isDelivered && (
+                  <li>
+                    <button
+                      className="primary-button w-full"
+                      onClick={deliverOrderHandler}
+                    >
+                      {loadingDeliver ? (
+                        <LoadingSpinner className="mx-auto w-[1.9rem] h-4 text-slate-400 animate-spin dark:text-purple-600 fill-white" />
+                      ) : (
+                        <>Deliver Order</>
+                      )}
+                    </button>
                   </li>
                 )}
               </ul>

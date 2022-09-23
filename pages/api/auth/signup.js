@@ -14,7 +14,8 @@ const handler = async (req, res) => {
     !email ||
     !email.includes("@") ||
     !password ||
-    password.trim().length < 5
+    password.trim().length < 6 ||
+    name.length < 3
   ) {
     res.status(422).json({
       message: "Validation error",

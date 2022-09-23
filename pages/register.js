@@ -18,6 +18,7 @@ const Register = () => {
   const {
     handleSubmit,
     register,
+    getValues,
     formState: { errors },
   } = useForm();
 
@@ -54,9 +55,16 @@ const Register = () => {
               {errors.password.message}
             </div>
           ) : errors.confirmPassword ? (
-            <div className="text-red-500 text-xs md:text-[0.85rem] leading-none">
-              {errors.confirmPassword.message}
-            </div>
+            errors.confirmPassword &&
+            errors.confirmPassword.type === "validate" ? (
+              <div className="text-red-500 text-xs md:text-[0.85rem] leading-none">
+                Password do not match.
+              </div>
+            ) : (
+              <div className="text-red-500 text-xs md:text-[0.85rem] leading-none">
+                {errors.confirmPassword.message}
+              </div>
+            )
           ) : (
             <></>
           )}
@@ -171,10 +179,10 @@ const Register = () => {
                   type="password"
                   id="confirmPassword"
                   {...register("confirmPassword", {
-                    required: "Please confirm your password",
+                    validate: (value) => value === getValues("password"),
                     minLength: {
                       value: 6,
-                      message: "Password should be of at least 6 chars.",
+                      message: "Confirm password is more than 6 chars.",
                     },
                   })}
                   className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
@@ -227,9 +235,6 @@ export async function getServerSideProps(context) {
   }
 
   return {
-    redirect: {
-      destination: "/login",
-      permanent: false,
-    },
+    props: {},
   };
 }

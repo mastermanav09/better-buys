@@ -111,6 +111,8 @@ const orderSlice = createSlice({
     loadingPay: null,
     successPay: null,
     errorPay: null,
+    loadingDeliver: null,
+    successDeliver: null,
   },
 
   reducers: {
@@ -158,6 +160,24 @@ const orderSlice = createSlice({
 
     setErrorNull(state, action) {
       state.error = "";
+    },
+
+    deliverRequest(state, action) {
+      state.loadingDeliver = true;
+    },
+
+    deliverSuccess(state, action) {
+      state.loadingDeliver = false;
+      state.successDeliver = true;
+    },
+
+    deliverFail(state, action) {
+      state.loadingDeliver = false;
+    },
+
+    deliverReset(state, action) {
+      state.loadingDeliver = false;
+      state.successDeliver = false;
     },
   },
 });

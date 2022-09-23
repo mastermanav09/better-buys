@@ -6,11 +6,8 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
       const session = await getSession({ req });
-
       if (!session) {
-        const error = new Error();
-        error.statusCode = 401;
-        throw error;
+        return res.status(401).json({ message: "Sign in required!" });
       }
 
       const { user } = session;

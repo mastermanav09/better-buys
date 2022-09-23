@@ -5,11 +5,8 @@ import db from "../../../../utils/db";
 const handler = async (req, res) => {
   try {
     const session = await getSession({ req });
-
     if (!session) {
-      const error = new Error();
-      error.statusCode = 401;
-      throw error;
+      return res.status(401).json({ message: "Sign in required!" });
     }
 
     await db.connect();

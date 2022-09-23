@@ -5,14 +5,16 @@ import PaytmChecksum from "paytmchecksum";
 
 const handler = async (req, res) => {
   if (req.method === "POST") {
-    const session = await getSession({ req });
-    if (!session) {
-      return res.status(401).json({ message: "Sign in required!" });
-    }
-
     try {
+      const session = await getSession({ req });
+      if (!session) {
+        return res.status(401).json({ message: "Sign in required!" });
+      }
+
       await db.connect();
+
       const order = await Order.findById(req.body.ORDERID);
+
       if (order) {
         if (order.isPaid) {
           return res.status(400).json({ message: "Order is already paid." });

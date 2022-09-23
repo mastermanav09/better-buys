@@ -3,11 +3,11 @@ import React from "react";
 const Cross = (props) => {
   return (
     <svg
+      {...props}
       fill="none"
       viewBox="0 0 24 24"
       style={{ strokeWidth: "2" }}
       stroke="currentColor"
-      className={props.className}
     >
       <path
         style={{

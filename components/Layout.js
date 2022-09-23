@@ -6,9 +6,9 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { Menu } from "@headlessui/react";
 import DropdownLink from "./DropdownLink";
-import { getSession } from "next-auth/react";
 import Cookies from "js-cookie";
 import { cartActions } from "../utils/store/reducers/cart";
+import { userActions } from "../utils/store/reducers/user";
 
 const Layout = ({ children }) => {
   const { status, data: session } = useSession();
@@ -39,7 +39,12 @@ const Layout = ({ children }) => {
         className="text-xs md:text-sm"
       />
 
-      <div className="flex min-h-screen flex-col">
+      <div
+        className="flex min-h-screen flex-col"
+        onClick={() => {
+          dispatch(userActions.toggleSidebar(false));
+        }}
+      >
         <header>
           <nav className="flex h-12 justify-between items-center shadow-md px-4 bg-slate-100">
             <Link href="/">
@@ -75,6 +80,16 @@ const Layout = ({ children }) => {
                         My Orders
                       </DropdownLink>
                     </Menu.Item>
+                    {session.user.isAdmin && (
+                      <Menu.Item>
+                        <DropdownLink
+                          className="dropdown-link"
+                          href="/admin/dashboard"
+                        >
+                          Admin Dashboard
+                        </DropdownLink>
+                      </Menu.Item>
+                    )}
                     <Menu.Item>
                       <a className="dropdown-link" onClick={logoutHandler}>
                         Logout
