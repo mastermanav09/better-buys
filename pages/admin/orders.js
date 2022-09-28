@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
 import PageLoader from "../../components/svg/PageLoader";
-import Sidebar from "../../components/Sidebar";
+import AdminSidebar from "../../components/AdminSidebar";
 import { useRouter } from "next/router";
 import { navLinks } from "../../utils/navlinks";
 import { useDispatch, useSelector } from "react-redux";
@@ -24,7 +24,7 @@ const AdminOrders = () => {
         <title>Admin Orders</title>
       </Head>
       <div>
-        <Sidebar navLinks={navLinks} pathname={router.pathname} />
+        <AdminSidebar navLinks={navLinks} pathname={router.pathname} />
         <div className={error ? `my-12` : null}>
           {isLoading ? (
             <PageLoader />
@@ -32,9 +32,11 @@ const AdminOrders = () => {
             error && <div className="alert-error text-center ">{error}</div>
           ) : (
             <div className="my-16">
-              <h1 className="mb-4 text-center text-xl md:text-left md:text-3xl lg:text-4xl">
-                Orders
-              </h1>
+              <div className="mb-8">
+                <h1 className="mb-4 text-center text-xl md:text-left md:text-3xl lg:text-4xl">
+                  Orders
+                </h1>
+              </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="border-b">

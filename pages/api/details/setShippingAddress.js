@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         },
       });
 
-      res.status(200).json({ fullName, address, city, state, postalCode });
+      res.status(201).json({ fullName, address, city, state, postalCode });
     } catch (error) {
       if (!error.statusCode) {
         error.statusCode = 500;

@@ -28,7 +28,7 @@ export default async function handler(req, res) {
         },
       });
 
-      res.status(200).json({ paymentMethod: userPaymentMethod });
+      res.status(201).json({ paymentMethod: userPaymentMethod });
     } catch (error) {
       if (!error.statusCode) {
         error.statusCode = 500;

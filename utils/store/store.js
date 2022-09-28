@@ -3,6 +3,7 @@ import cartReducer from "./reducers/cart";
 import userReducer from "./reducers/user";
 import orderReducer from "./reducers/order";
 import adminReducer from "./reducers/admin";
+import productReducer from "./reducers/product";
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     user: userReducer,
     order: orderReducer,
     admin: adminReducer,
+    product: productReducer,
   },
 
   devTools: process.env.NODE_ENV === "production" ? false : true,

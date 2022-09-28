@@ -69,7 +69,6 @@ const handler = async (req, res) => {
         throw error;
       }
     } catch (error) {
-      console.log(error);
       res.redirect(303, `/orders/${req.body.ORDERID}`);
     }
   }

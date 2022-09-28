@@ -68,7 +68,7 @@ const Home = (props) => {
         <title>Better Buys</title>
         <meta name="description" content="Ecommerce website" />
       </Head>
-      <div className="grid grid-cols-2 xs-max:grid-cols-1 gap-2 md:grid-cols-3 lg:grid-cols-4 text-xs lg:text-sm md:gap-4">
+      <div className="grid grid-cols-2 xs-max:grid-cols-1 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 text-xs lg:text-sm md:gap-4">
         {products.map((product) => (
           <ProductItem
             key={product.slug}
@@ -86,7 +86,9 @@ export default Home;
 export async function getStaticProps() {
   await db.connect();
 
-  const products = await Product.find().lean();
+  const products = await Product.find()
+    .select("-reviews -numReviews -numRatings")
+    .lean();
   return {
     props: {
       products: products.map(db.convertDocToObj),

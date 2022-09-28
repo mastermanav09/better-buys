@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 import db from "../../../../../utils/db";
-import Product from "../../../../../models/product";
+import User from "../../../../../models/user";
 
 const handler = async (req, res) => {
   const session = await getSession({ req });
@@ -23,49 +23,31 @@ const handler = async (req, res) => {
 
 const getHandler = async (req, res) => {
   await db.connect();
-  const product = await Product.findById(req.query.id);
-  res.status(200).json(product);
+  const user = await User.findById(req.query.id).select(
+    "-credentials.password -shippingAddress -paymentMethod"
+  );
+  res.status(200).json(user);
 };
 
 const putHandler = async (req, res) => {
   try {
     await db.connect();
 
-    let category = req.body.category;
     const name = req.body.name;
-    const slug = req.body.slug;
-    const price = +req.body.price;
-    const image = req.body.image;
-    const brand = req.body.brand;
-    const countInStock = req.body.countInStock;
-    const description = req.body.description;
+    const isAdmin = req.body.isAdmin;
 
-    if (
-      isNaN(price) ||
-      countInStock < 0 ||
-      name.length < 3 ||
-      description.length < 10
-    ) {
+    if (name.length < 3) {
       const error = new Error("Invalid Details!");
       error.statusCode = 400;
       throw error;
     }
 
-    category = category + (category[category.length - 1] !== "s" ? "s" : "");
-    category = category.charAt(0).toUpperCase() + category.slice(1);
-
-    await Product.findByIdAndUpdate(req.query.id, {
-      name: name,
-      slug: slug,
-      price: price,
-      category: category,
-      image: image,
-      brand: brand,
-      countInStock: countInStock,
-      description: description,
+    await User.findByIdAndUpdate(req.query.id, {
+      "credentials.name": name,
+      "credentials.isAdmin": isAdmin,
     });
 
-    res.status(204).json({ message: "Product updated successfully!" });
+    res.status(200).json({ message: "User updated successfully!" });
   } catch (error) {
     res
       .status(error.statusCode || 500)
@@ -76,9 +58,9 @@ const putHandler = async (req, res) => {
 const deleteHandler = async (req, res, user) => {
   try {
     await db.connect();
-    await Product.findByIdAndDelete(req.query.id);
+    await User.findByIdAndDelete(req.query.id);
 
-    res.status(200).json({ message: "Product deleted successfully!" });
+    res.status(200).json({ message: "User deleted successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong!" });
   }
