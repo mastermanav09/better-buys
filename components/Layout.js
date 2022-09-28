@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import React, { useState, useEffect } from "react";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
@@ -9,12 +9,19 @@ import DropdownLink from "./DropdownLink";
 import Cookies from "js-cookie";
 import { cartActions } from "../utils/store/reducers/cart";
 import { userActions } from "../utils/store/reducers/user";
+import Sidebar from "./Sidebar";
+import { adminActions } from "../utils/store/reducers/admin";
+import HamburgerButton from "./svg/HamburgerButton";
+import axios from "axios";
+import { getError } from "../utils/error";
 
 const Layout = ({ children }) => {
   const { status, data: session } = useSession();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const showSidebar = useSelector((state) => state.user.ui.showSidebar);
   const [cartItemsCount, setCartItemsCount] = useState(0);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(cartItems)) {
@@ -29,6 +36,21 @@ const Layout = ({ children }) => {
     dispatch(cartActions.resetUserOrderDetails());
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data } = await axios.get("/api/products/categories");
+      setCategories(data);
+    } catch (error) {
+      toast.error(getError(error));
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  console.log(categories);
+
   return (
     <>
       <ToastContainer
@@ -39,16 +61,23 @@ const Layout = ({ children }) => {
         className="text-xs md:text-sm"
       />
 
+      {showSidebar && <Sidebar categories={categories} />}
+
       <div
         className="flex min-h-screen flex-col"
         onClick={() => {
+          dispatch(adminActions.toggleSidebar(false));
           dispatch(userActions.toggleSidebar(false));
         }}
       >
         <header>
-          <nav className="flex h-12 justify-between items-center shadow-md px-4 bg-slate-100">
+          <nav
+            className="flex h-12 justify-between items-center shadow-md px-4 text-white"
+            style={{ backgroundColor: "#2b3a51" }}
+          >
+            <HamburgerButton showSidebar={showSidebar} />
             <Link href="/">
-              <a className="text-lg font-extrabold">Better Buys</a>
+              <a className="text-lg font-extrabold text-white">Better Buys</a>
             </Link>
             <div>
               <Link href="/cart">
@@ -62,9 +91,12 @@ const Layout = ({ children }) => {
                 </a>
               </Link>
               {session?.user ? (
-                <Menu as="div" className="relative inline-block z-10">
-                  <Menu.Button className="text-blue-600">
-                    {session.user.name}
+                <Menu
+                  as="div"
+                  className="relative inline-block z-10 text-black"
+                >
+                  <Menu.Button className="text-white">
+                    {status == "loading" ? "loading..." : session.user.name}
                   </Menu.Button>
                   <Menu.Items className="absolute right-0 w-56 origin-top-right shadow-lg bg-white rounded-md text-sm">
                     <Menu.Item>
@@ -108,7 +140,10 @@ const Layout = ({ children }) => {
         <main className="container mx-auto mt-4 mb-20 px-4 h-full">
           {children}
         </main>
-        <footer className="flex justify-center items-center h-10 shadow-inner bg-slate-100 mt-auto">
+        <footer
+          className="flex justify-center items-center h-10 shadow-inner mt-auto text-white"
+          style={{ backgroundColor: "#2b3a51" }}
+        >
           Copyright &copy; 2022 Better Buys
         </footer>
       </div>

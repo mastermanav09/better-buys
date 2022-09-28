@@ -23,7 +23,7 @@ const handler = async (req, res) => {
         deliveredAt: Date.now(),
       });
 
-      res.status(200).json({ message: "Order delivered successfully!" });
+      res.status(204).json({ message: "Order delivered successfully!" });
     } catch (error) {
       res
         .status(error.statusCode || 500)

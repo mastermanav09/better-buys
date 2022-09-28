@@ -9,6 +9,8 @@ module.exports = {
       screens: {
         "sm-max": { max: "640px" },
         "xs-max": { max: "360px" },
+        "md-max": { max: "767px" },
+        "lg-max": { max: "1023px" },
       },
 
       animation: {

@@ -43,13 +43,43 @@ export const fetchProducts = createAsyncThunk(
   }
 );
 
+export const fetchUsers = createAsyncThunk(
+  "admin/fetchUsers",
+  async (_, { dispatch }) => {
+    try {
+      dispatch(adminActions.fetchRequest());
+      const { data } = await axios.get("/api/admin/users");
+      dispatch(adminActions.fetchUsersSuccess(data));
+    } catch (error) {
+      dispatch(adminActions.fetchFail(getError(error)));
+    }
+  }
+);
+
+export const fetchUser = createAsyncThunk(
+  "admin/fetchUser",
+  async ({ userId, setValue }, { dispatch }) => {
+    try {
+      dispatch(adminActions.fetchRequest());
+      const { data } = await axios.get(`/api/admin/users/${userId}`);
+      setValue("name", data.credentials.name);
+      setValue("isAdmin", data.credentials.isAdmin);
+
+      dispatch(adminActions.fetchUserSuccess(data));
+    } catch (error) {
+      dispatch(adminActions.fetchFail(getError(error)));
+    }
+  }
+);
+
 export const fetchProduct = createAsyncThunk(
   "admin/fetchProduct",
-  async ({ productId, setValue }, { dispatch }) => {
+  async ({ productId, setValue, router }, { dispatch }) => {
     try {
       dispatch(adminActions.fetchRequest());
       const { data } = await axios.get(`/api/admin/products/${productId}`);
       dispatch(adminActions.fetchProductSuccess(data));
+      console.log(data);
       setValue("name", data.name);
       setValue("slug", data.slug);
       setValue("price", data.price);
@@ -59,7 +89,27 @@ export const fetchProduct = createAsyncThunk(
       setValue("countInStock", data.countInStock);
       setValue("description", data.description);
     } catch (error) {
+      router.replace("/error");
       dispatch(adminActions.fetchFail(getError(error)));
+    }
+  }
+);
+
+export const createProduct = createAsyncThunk(
+  "admin/createProduct",
+  async ({ router }, { dispatch }) => {
+    toast.clearWaitingQueue();
+
+    try {
+      dispatch(adminActions.createRequest());
+      const { data } = await axios.post("/api/admin/products");
+      dispatch(adminActions.createSuccess());
+
+      router.push(`/admin/product/${data.product._id}`);
+      toast.success("Product created successfully!");
+    } catch (error) {
+      dispatch(adminActions.createFail());
+      toast.error(getError(error));
     }
   }
 );
@@ -74,11 +124,67 @@ export const editProduct = createAsyncThunk(
         ...productData,
       });
 
-      dispatch(adminActions.updateProductSuccess(data));
+      dispatch(adminActions.updateSuccess());
       toast.success("Product update successfully!");
       router.push("/admin/products");
     } catch (error) {
       dispatch(adminActions.updateFail(getError(error)));
+      toast.error(getError(error));
+    }
+  }
+);
+
+export const editUser = createAsyncThunk(
+  "admin/editUser",
+  async ({ userId, userData, router }, { dispatch }) => {
+    toast.clearWaitingQueue();
+    try {
+      dispatch(adminActions.updateRequest());
+      const { data } = await axios.put(`/api/admin/users/${userId}`, {
+        ...userData,
+      });
+
+      dispatch(adminActions.updateSuccess());
+      toast.success("User updated successfully!");
+      router.push("/admin/users");
+    } catch (error) {
+      dispatch(adminActions.updateFail(getError(error)));
+      toast.error(getError(error));
+    }
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  "admin/deleteProduct",
+  async (productId, { dispatch }) => {
+    toast.clearWaitingQueue();
+
+    try {
+      dispatch(adminActions.deleteRequest(productId));
+      await axios.delete(`/api/admin/products/${productId}`);
+      dispatch(adminActions.deleteSuccess());
+
+      toast.success("Product deleted successfully!");
+    } catch (error) {
+      dispatch(adminActions.deleteFail());
+      toast.error(getError(error));
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "admin/deleteUser",
+  async (userId, { dispatch }) => {
+    toast.clearWaitingQueue();
+
+    try {
+      dispatch(adminActions.deleteRequest(userId));
+      await axios.delete(`/api/admin/users/${userId}`);
+      dispatch(adminActions.deleteSuccess());
+
+      toast.success("User deleted successfully!");
+    } catch (error) {
+      dispatch(adminActions.deleteFail());
       toast.error(getError(error));
     }
   }
@@ -147,11 +253,25 @@ const adminSlice = createSlice({
     summary: { salesData: [] },
     orders: [],
     products: [],
+    users: [],
+
     currentProduct: null,
-    loadingProductUpdate: false,
-    errorProductUpdate: false,
+    currentUser: null,
+
+    loadingUpdate: false,
+    errorUpdate: false,
+
     loadingUpload: false,
     errorUpload: null,
+
+    loadingCreate: false,
+
+    loadingDelete: false,
+    successDelete: null,
+
+    ui: {
+      showAdminSidebar: false,
+    },
   },
 
   reducers: {
@@ -195,18 +315,18 @@ const adminSlice = createSlice({
     },
 
     updateRequest(state, action) {
-      state.loadingProductUpdate = true;
-      state.errorProductUpdate = "";
+      state.loadingUpdate = true;
+      state.errorUpdate = "";
     },
 
-    updateProductSuccess(state, action) {
-      state.loadingProductUpdate = false;
-      state.errorProductUpdate = "";
+    updateSuccess(state, action) {
+      state.loadingUpdate = false;
+      state.errorUpdate = "";
     },
 
     updateFail(state, action) {
-      state.loadingProductUpdate = false;
-      state.errorProductUpdate = action.payload;
+      state.loadingUpdate = false;
+      state.errorUpdate = action.payload;
     },
 
     uploadRequest(state, action) {
@@ -222,6 +342,51 @@ const adminSlice = createSlice({
     uploadFail(state, action) {
       state.loadingUpload = false;
       state.errorUpload = action.payload;
+    },
+
+    createRequest(state, action) {
+      state.loadingCreate = true;
+    },
+
+    createSuccess(state, action) {
+      state.loadingCreate = false;
+    },
+
+    createFail(state, action) {
+      state.loadingCreate = false;
+    },
+
+    deleteRequest(state, action) {
+      state.loadingDelete = action.payload;
+    },
+
+    deleteSuccess(state, action) {
+      state.loadingDelete = false;
+      state.successDelete = true;
+    },
+
+    deleteFail(state, action) {
+      state.loadingDelete = false;
+      state.successDelete = null;
+    },
+
+    deleteReset(state, action) {
+      state.loadingDelete = false;
+      state.successDelete = null;
+    },
+
+    fetchUsersSuccess(state, action) {
+      state.users = action.payload;
+      state.isLoading = false;
+    },
+
+    fetchUserSuccess(state, action) {
+      state.isLoading = false;
+      state.currentUser = action.payload;
+    },
+
+    toggleSidebar(state, action) {
+      state.ui.showAdminSidebar = action.payload;
     },
   },
 });

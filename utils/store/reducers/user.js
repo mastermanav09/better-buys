@@ -53,7 +53,6 @@ export const signup = createAsyncThunk("user/signup", async (data) => {
   const password = data.password;
   const name = data.username;
 
-  console.log(email);
   data.setIsLoading(true);
 
   try {

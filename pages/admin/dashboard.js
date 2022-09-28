@@ -14,7 +14,7 @@ import {
 
 import PageLoader from "../../components/svg/PageLoader";
 import Link from "next/link";
-import Sidebar from "../../components/Sidebar";
+import AdminSidebar from "../../components/AdminSidebar";
 import { navLinks } from "../../utils/navlinks";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSummary } from "../../utils/store/reducers/admin";
@@ -64,7 +64,7 @@ const AdminDashboard = () => {
       </Head>
 
       <div>
-        <Sidebar navLinks={navLinks} pathname={router.pathname} />
+        <AdminSidebar navLinks={navLinks} pathname={router.pathname} />
         <div className={error ? `my-12` : null}>
           {isLoading ? (
             <PageLoader />

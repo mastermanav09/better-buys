@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { cartActions } from "../utils/store/reducers/cart";
+import ReactStars from "react-rating-stars-component";
 
 const ProductItem = ({ product, addToCartHandler }) => {
   const dispatch = useDispatch();
@@ -26,13 +27,25 @@ const ProductItem = ({ product, addToCartHandler }) => {
       <div className="flex flex-col items-center justify-center pt-2 p-3">
         <Link href={`/product/${product.slug}`}>
           <a>
-            <h2 className="text-l font-semibold">{product.name}</h2>
+            <h2 className="text-sm mb-1 font-semibold">{product.name}</h2>
           </a>
         </Link>
-        <p className="mb-2">{product.brand}</p>
-        <p className="my-1">₹{product.price}</p>
+        <div className="pointer-events-none">
+          <ReactStars
+            key={Math.random()}
+            count={5}
+            value={product.rating}
+            isHalf={true}
+            className="text-xs"
+            classNames="text-[10px]"
+            size={28}
+            activeColor="#ffd700"
+          />
+        </div>
+        <p className="my-[0.4rem]">{product.brand}</p>
+        <p>₹{product.price}</p>
         <button
-          className="primary-button my-1 disabled:cursor-default disabled:bg-gray-300"
+          className="primary-button mt-2 disabled:cursor-default disabled:bg-gray-300"
           type="button"
           onClick={() => addToCartHandler(product)}
           // disabled={product.countInStock === 0}

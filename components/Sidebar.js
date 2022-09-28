@@ -1,93 +1,106 @@
 import React from "react";
 import Image from "next/image";
-import Cross from "./svg/Cross";
-import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import Link from "next/link";
+import { useDispatch } from "react-redux";
 import { userActions } from "../utils/store/reducers/user";
-import { NavLink } from "./NavLink";
 
 const Sidebar = (props) => {
   const dispatch = useDispatch();
-  const showSidebar = useSelector((state) => state.user.ui.showSidebar);
-  const { pathname, navLinks } = props;
-  const closeSidebarHandler = (val) => {
-    dispatch(userActions.toggleSidebar(val));
-  };
+  //   const [currentSelection, setCurrentSelection] = useState(null);
 
   return (
-    <>
-      {showSidebar && (
-        <div
-          className="sidebar fixed top-0 bottom-0 left-0 px-4 overflow-y-auto text-center bg-gray-700 z-50  animate-slideRight"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <Cross
-            className="w-4 h-4 text-white ml-auto mt-4 cursor-pointer"
-            onClick={(e) => closeSidebarHandler(false)}
-          />
-          <div className="text-gray-100 text-xl">
-            <div className="p-2.5 my-1 flex items-center ">
-              <div className="font-bold text-gray-200 text-[15px] flex items-center gap-4">
-                <div className="flex items-center">
-                  <Image
-                    src="/images/better_buys.png"
-                    className="rounded-full"
-                    alt="logo"
-                    width={53}
-                    height={50}
-                  ></Image>
-                </div>{" "}
-                <h1 className="text-base md:text-[0.94rem]">Better Buys</h1>
-              </div>
-            </div>
-            <div className="my-2 bg-gray-600 h-[1px]"></div>
+    <div className="w-60 h-full shadow-md bg-gray-50 fixed z-50 animate-slideRight">
+      <div className="pt-4 pb-2 px-6">
+        <div className="flex items-center">
+          <div className="shrink-0">
+            <Image
+              src="/images/better_buys.png"
+              className="rounded-full"
+              alt="logo"
+              width={50}
+              height={50}
+            ></Image>
           </div>
-
-          {navLinks.map((link, index) => (
-            <NavLink
-              key={index}
-              className={[
-                `p-2.5 my-2 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-500 text-white`,
-                link.path === pathname ? "bg-blue-600" : "",
-              ].join(" ")}
-              href={link.path}
-            >
-              <span className="text-[15px] ml-4 text-gray-200">
-                {link.title}
-              </span>
-            </NavLink>
-          ))}
+          <div className="grow ml-3">
+            <Link href="/">
+              <a
+                className="text-base font-semibold text-blue-600"
+                onClick={() => dispatch(userActions.toggleSidebar(false))}
+              >
+                Better Buys
+              </a>
+            </Link>
+          </div>
         </div>
-      )}
-
-      <div
-        onClick={(event) => {
-          event.stopPropagation();
-          closeSidebarHandler(true);
-        }}
-        className="absolute top-16 left-2"
-      >
-        <button
-          type="button"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[0.65rem] px-2 py-2 md:text-xs md:px-3 md:py-2 text-center flex items-center gap-2 focus:bg-blue-800"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            style={{ strokeWidth: "1.5" }}
-            stroke="currentColor"
-            className="w-5 h-[1.1rem]"
-          >
-            <path
-              style={{ strokeLinecap: "round", strokeLinejoin: "round" }}
-              d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
-            />
-          </svg>
-          Open Sidebar
-        </button>
       </div>
-    </>
+      <hr />
+
+      <div>
+        <h2 className="text-gray-800 py-2 px-7 mb-2 bg-gray-200">Categories</h2>
+
+        <ul className="relative px-1">
+          {props.categories.map((category, index) => (
+            <li key={index} className="relative">
+              <Link href={`/search?category=${category}`}>
+                <a className="flex items-center text-sm py-4 pl-12 pr-6 h-6 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-100 ">
+                  {category}
+                </a>
+              </Link>
+            </li>
+          ))}
+          {/* {sidebarLinkData.map((mainLink, index1) => (
+            <li className="relative" id="sidenavSecEx2" key={index1 + 1}>
+              <div
+                className="flex items-center text-sm py-4 px-6 h-12 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-100 cursor-pointer"
+                onClick={() => {
+                  if (currentSelection === index1 + 1) {
+                    setCurrentSelection(null);
+                  } else {
+                    setCurrentSelection(index1 + 1);
+                  }
+                }}
+              >
+                <span>{mainLink.title}</span>
+                <svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  className="w-3 h-3 ml-auto"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z"
+                  ></path>
+                </svg>
+              </div>
+              <ul className="relative">
+                {mainLink.subCategories.map((link, index2) => {
+                  if (currentSelection === index1 + 1) {
+                    return (
+                      <li
+                        key={index2 + 1}
+                        className="relative animate-slideRight"
+                      >
+                        <Link
+                          href={`/search?category=${link.category}&subcategory=${link.subCategory}`}
+                        >
+                          <a className="flex items-center text-xs py-4 pl-12 pr-6 h-6 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-100 ">
+                            {link.title}
+                          </a>
+                        </Link>
+                      </li>
+                    );
+                  }
+                })}
+              </ul>
+            </li>
+          ))} */}
+        </ul>
+      </div>
+    </div>
   );
 };
 

@@ -10,7 +10,7 @@ import {
 } from "../../../utils/store/reducers/admin";
 import { useForm } from "react-hook-form";
 import Head from "next/head";
-import Sidebar from "../../../components/Sidebar";
+import AdminSidebar from "../../../components/AdminSidebar";
 import { navLinks } from "../../../utils/navlinks";
 import PageLoader from "../../../components/svg/PageLoader";
 import Link from "next/link";
@@ -23,13 +23,8 @@ const AdminProductEdit = () => {
   const { query } = useRouter();
   const productId = query.id;
   const dispatch = useDispatch();
-  const {
-    isLoading,
-    error,
-    loadingProductUpdate,
-    errorProductUpdate,
-    loadingUpload,
-  } = useSelector((state) => state.admin);
+  const { isLoading, error, loadingUpdate, errorUpdate, loadingUpload } =
+    useSelector((state) => state.admin);
   const [selectedImage, setSelectedImage] = useState(null);
 
   const {
@@ -81,14 +76,16 @@ const AdminProductEdit = () => {
 
   useEffect(() => {
     dispatch(adminActions.nullifyErrors());
-    dispatch(fetchProduct({ productId, setValue }));
-  }, [dispatch, productId, setValue]);
+    dispatch(fetchProduct({ productId, setValue, router }));
+  }, [dispatch, productId, setValue, router]);
 
   return (
     <>
-      <Head>Admin Products</Head>
+      <Head>
+        <title>Product {productId}</title>
+      </Head>
       <div>
-        <Sidebar navLinks={navLinks} pathname={router.pathname} />
+        <AdminSidebar navLinks={navLinks} pathname={router.pathname} />
         <div className={error ? `my-12` : null}>
           {isLoading ? (
             <PageLoader />
@@ -318,15 +315,13 @@ const AdminProductEdit = () => {
                 </div>
 
                 <div className="flex justify-between">
-                  <button className="default-button">
-                    <Link href={`/admin/products`}>Back</Link>
-                  </button>
+                  <Link href={`/admin/products`}>
+                    <button className="default-button">Back </button>
+                  </Link>
+
                   <div>
-                    <button
-                      disabled={loadingProductUpdate}
-                      className="primary-button"
-                    >
-                      {loadingProductUpdate ? (
+                    <button disabled={loadingUpdate} className="primary-button">
+                      {loadingUpdate ? (
                         <LoadingSpinner className="mx-auto w-[50px] h-4 text-slate-400 animate-spin dark:text-purple-600 fill-white" />
                       ) : (
                         "Update"
@@ -335,7 +330,7 @@ const AdminProductEdit = () => {
                   </div>
                 </div>
 
-                {errorProductUpdate && (
+                {errorUpdate && (
                   <div className="text-red-500 text-xs md:text-[0.85rem] leading-none my-3 absolute">
                     Couldn&apos;t update product, Please try again.
                   </div>
