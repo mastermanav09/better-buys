@@ -3,22 +3,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { userActions } from "../utils/store/reducers/user";
+import Cross from "./svg/Cross";
 
 const Sidebar = (props) => {
   const dispatch = useDispatch();
   //   const [currentSelection, setCurrentSelection] = useState(null);
 
+  const closeSidebarHandler = (val) => {
+    dispatch(userActions.toggleSidebar(val));
+  };
+
   return (
     <div className="w-60 h-full shadow-md bg-gray-50 fixed z-50 animate-slideRight">
-      <div className="pt-4 pb-2 px-6">
+      <Cross
+        className="w-5 h-5 text-black ml-auto mt-4 mx-4 cursor-pointer"
+        onClick={() => closeSidebarHandler(false)}
+      />
+      <div className="py-2 px-6">
         <div className="flex items-center">
           <div className="shrink-0">
             <Image
               src="/images/better_buys.png"
               className="rounded-full"
               alt="logo"
-              width={50}
-              height={50}
+              width={55}
+              height={55}
             ></Image>
           </div>
           <div className="grow ml-3">
