@@ -12,8 +12,8 @@ import { userActions } from "../utils/store/reducers/user";
 import Sidebar from "./Sidebar";
 import { adminActions } from "../utils/store/reducers/admin";
 import HamburgerButton from "./svg/HamburgerButton";
-import axios from "axios";
-import { getError } from "../utils/error";
+import { fetchCategories } from "../utils/store/reducers/product";
+import { useRouter } from "next/router";
 
 const Layout = ({ children }) => {
   const { status, data: session } = useSession();
@@ -22,6 +22,8 @@ const Layout = ({ children }) => {
   const showSidebar = useSelector((state) => state.user.ui.showSidebar);
   const [cartItemsCount, setCartItemsCount] = useState(0);
   const [categories, setCategories] = useState([]);
+  const router = useRouter();
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (Array.isArray(cartItems)) {
@@ -36,20 +38,22 @@ const Layout = ({ children }) => {
     dispatch(cartActions.resetUserOrderDetails());
   };
 
-  const fetchCategories = async () => {
-    try {
-      const { data } = await axios.get("/api/products/categories");
-      setCategories(data);
-    } catch (error) {
-      toast.error(getError(error));
-    }
+  const queryChangeHandler = (event) => {
+    setQuery(event.target.value);
+  };
+
+  const submitQueryHandler = async (event) => {
+    event.preventDefault();
+    router.push(`/search?query=${query}`);
+  };
+
+  const fetchCategoriesHandler = async () => {
+    dispatch(fetchCategories({ setCategories }));
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchCategoriesHandler();
   }, []);
-
-  console.log(categories);
 
   return (
     <>
@@ -72,13 +76,67 @@ const Layout = ({ children }) => {
       >
         <header>
           <nav
-            className="flex h-12 justify-between items-center shadow-md px-4 text-white"
+            className="flex h-12 justify-between items-center shadow-md px-2 text-white"
             style={{ backgroundColor: "#2b3a51" }}
           >
-            <HamburgerButton showSidebar={showSidebar} />
-            <Link href="/">
-              <a className="text-lg font-extrabold text-white">Better Buys</a>
-            </Link>
+            <div className="flex items-center gap-2">
+              <HamburgerButton showSidebar={showSidebar} />
+              <Link href="/">
+                <a className="text-lg font-extrabold text-white">Better Buys</a>
+              </Link>
+            </div>
+            <form
+              className="items-center w-2/6 hidden md:flex min-w-fit"
+              onSubmit={submitQueryHandler}
+            >
+              <label htmlFor="simple-search" className="sr-only">
+                Search
+              </label>
+              <div className="relative w-full">
+                <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+                  <svg
+                    className="w-5 h-5 text-gray-500 dark:text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      style={{ fillRule: "evenodd", clipRule: "evenodd" }}
+                      d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  id="simple-search"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 px-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Search"
+                  required
+                  onChange={queryChangeHandler}
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-2.5 py-2 ml-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    style={{
+                      strokeLinecap: "round",
+                      strokeLinejoin: "round",
+                      strokeWidth: "2",
+                    }}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </button>
+            </form>{" "}
             <div>
               <Link href="/cart">
                 <a className="p-2">

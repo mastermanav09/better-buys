@@ -25,6 +25,20 @@ export const fetchReviews = createAsyncThunk(
   }
 );
 
+export const fetchCategories = createAsyncThunk(
+  "admin/fetchCategories",
+  async ({ setCategories }) => {
+    toast.clearWaitingQueue();
+
+    try {
+      const { data } = await axios.get("/api/products/categories");
+      setCategories(data);
+    } catch (error) {
+      toast.error(getError(error));
+    }
+  }
+);
+
 export const postReview = createAsyncThunk(
   "admin/postReview",
   async (

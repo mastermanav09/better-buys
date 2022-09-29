@@ -24,7 +24,7 @@ const AdminSidebar = (props) => {
         >
           <Cross
             className="w-4 h-4 text-white ml-auto mt-4 cursor-pointer"
-            onClick={(e) => closeSidebarHandler(false)}
+            onClick={() => closeSidebarHandler(false)}
           />
           <div className="text-gray-100 text-xl">
             <div className="p-2.5 my-1 flex items-center ">
