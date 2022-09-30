@@ -50,7 +50,11 @@ const Sidebar = (props) => {
         <ul className="relative px-1">
           {props.categories.map((category, index) => (
             <li key={index} className="relative">
-              <Link href={`/search?category=${category}`}>
+              <Link
+                href={`/search?category=${
+                  category.charAt(0).toLowerCase() + category.slice(1)
+                }`}
+              >
                 <a className="flex items-center text-sm py-4 pl-12 pr-6 h-6 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-100 ">
                   {category}
                 </a>

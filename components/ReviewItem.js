@@ -28,6 +28,7 @@ const ReviewItem = (props) => {
         </div>
         <div className="flex items-center pointer-events-none">
           <ReactStars
+            key={rating}
             count={5}
             value={rating}
             size={32}

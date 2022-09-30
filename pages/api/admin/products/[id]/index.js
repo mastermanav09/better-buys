@@ -32,11 +32,11 @@ const putHandler = async (req, res) => {
     await db.connect();
 
     let category = req.body.category;
+    let brand = req.body.brand;
     const name = req.body.name;
     const slug = req.body.slug;
     const price = +req.body.price;
     const image = req.body.image;
-    const brand = req.body.brand;
     const countInStock = req.body.countInStock;
     const description = req.body.description;
 
@@ -53,6 +53,7 @@ const putHandler = async (req, res) => {
 
     category = category + (category[category.length - 1] !== "s" ? "s" : "");
     category = category.charAt(0).toUpperCase() + category.slice(1);
+    brand = brand.charAt(0).toUpperCase() + brand.slice(1);
 
     await Product.findByIdAndUpdate(req.query.id, {
       name: name,

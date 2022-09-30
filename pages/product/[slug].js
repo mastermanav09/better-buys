@@ -77,6 +77,7 @@ const ProductItem = (props) => {
     }
   };
 
+  console.log(product.numRatings);
   let totalRatings = 0;
   let fiveStarRatingPct = 0;
   let fourStarRatingPct = 0;

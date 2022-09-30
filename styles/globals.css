@@ -39,12 +39,39 @@ a {
   @apply mb-5 block rounded-lg border border-gray-200 shadow-md;
 }
 
+@media screen and (max-width: 768px) {
+  .MuiInputBase-root {
+    font-size: 0.85rem !important;
+  }
+}
+
+@media screen and (max-width: 380px) {
+  .MuiInputBase-root {
+    font-size: 0.75rem !important;
+  }
+}
+
 .primary-button {
-  @apply rounded  sm:py-2 sm:px-4 py-[0.35rem] px-[0.6rem] outline-none bg-slate-600 enabled:hover:bg-slate-500 enabled:active:bg-slate-400 text-[0.65rem] sm:text-[0.7rem] xl:text-[0.8rem]  text-white;
+  @apply rounded sm:py-2 sm:px-4 py-[0.35rem] px-[0.6rem] outline-none text-[0.65rem] sm:text-[0.7rem] xl:text-[0.8rem] text-white;
+  background-color: rgb(71 85 105);
+}
+
+.primary-button:enabled:hover {
+  background-color: rgb(100 116 139);
+}
+
+.primary-button:enabled:active {
+  background-color: rgb(148 163 184);
 }
 
 .default-button {
-  @apply rounded  sm:py-2 sm:px-4 py-[0.35rem] px-[0.6rem] bg-white text-[0.65rem] sm:text-xs  text-black border-2 border-slate-500 hover:bg-slate-100 font-semibold;
+  @apply rounded sm:py-2 sm:px-4 py-[0.35rem] px-[0.6rem] bg-white text-[0.65rem] sm:text-xs text-black border-2 font-semibold;
+
+  border-color: rgb(100 116 139);
+}
+
+.default-button:hover {
+  background-color: rgb(241 245 249);
 }
 
 .dropdown-link {
