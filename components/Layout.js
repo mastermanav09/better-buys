@@ -195,7 +195,7 @@ const Layout = ({ children }) => {
             </div>
           </nav>
         </header>
-        <main className="container mx-auto mt-4 mb-20 px-4 h-full">
+        <main className="container mx-auto mt-4 mb-20 px-3 h-full">
           {children}
         </main>
         <footer
