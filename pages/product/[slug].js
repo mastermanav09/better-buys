@@ -388,7 +388,6 @@ export async function getServerSideProps(context) {
   const query = context.query;
   const { slug } = query;
 
-  await db.connect();
   const product = await Product.findOne({ slug })
     .select("-numRatings._id -reviews")
     .lean();
