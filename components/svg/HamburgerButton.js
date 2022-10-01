@@ -17,7 +17,7 @@ const HamburgerButton = (props) => {
         }}
       >
         <div
-          className={`relative flex overflow-hidden items-center justify-center rounded-full w-[50px] h-[50px]  bg-slate-700 shadow-md hover:bg-slate-600 ${
+          className={`relative flex overflow-hidden items-center justify-center rounded-full w-[45px] h-[45px]  bg-slate-700 shadow-md hover:bg-slate-600 ${
             showSidebar && "bg-slate-600"
           }`}
         >
