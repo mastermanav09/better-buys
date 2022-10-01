@@ -3,7 +3,6 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import db from "../utils/db";
 import Product from "../models/product";
-import Link from "next/link";
 import ProductItem from "../components/ProductItem";
 import { useSelector, useDispatch } from "react-redux";
 import dynamic from "next/dynamic";
@@ -16,8 +15,8 @@ import {
   MenuItem,
   Select,
   Typography,
-} from "@material-ui/core";
-import Pagination from "@material-ui/lab/Pagination";
+  Pagination,
+} from "@mui/material";
 import { toast } from "react-toastify";
 import ReactStars from "react-rating-stars-component";
 
@@ -61,6 +60,7 @@ const Search = (props) => {
   const router = useRouter();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
+  // const Pagination = usePagination();
 
   const {
     query = "all",

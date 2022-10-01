@@ -93,5 +93,7 @@ export async function getStaticProps() {
     props: {
       products: products.map(db.convertDocToObj),
     },
+
+    revalidate: 3600,
   };
 }
