@@ -25,7 +25,13 @@ const AdminProductEdit = () => {
   const dispatch = useDispatch();
   const { isLoading, error, loadingUpdate, errorUpdate, loadingUpload } =
     useSelector((state) => state.admin);
+  const [selectedFeaturedImage, setFeaturedSelectedImage] = useState(null);
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [loadingFeaturedImageUpload, setLoadingFeaturedImageUpload] =
+    useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isEditingImage, setIsEditingImage] = useState(false);
+  const [isEditingFeaturedImage, setIsEditingFeaturedImage] = useState(false);
 
   const {
     register,
@@ -39,7 +45,24 @@ const AdminProductEdit = () => {
       return;
     }
 
-    dispatch(uploadProductImage({ selectedImage, setValue }));
+    dispatch(
+      uploadProductImage({ selectedImage, setValue, isFeaturedImage: false })
+    );
+  };
+
+  const uploadFeaturedImageHandler = async () => {
+    if (!selectedFeaturedImage) {
+      return;
+    }
+
+    dispatch(
+      uploadProductImage({
+        selectedFeaturedImage,
+        setValue,
+        isFeaturedImage: true,
+        setLoadingFeaturedImageUpload,
+      })
+    );
   };
 
   const submitHandler = async ({
@@ -50,10 +73,17 @@ const AdminProductEdit = () => {
     image,
     brand,
     countInStock,
+    isFeatured,
+    featuredImage,
     description,
   }) => {
-    dispatch(adminActions.nullifyErrors());
+    if (isFeatured) {
+      if (featuredImage.trim().length === 0) {
+        return;
+      }
+    }
 
+    dispatch(adminActions.nullifyErrors());
     dispatch(
       editProduct({
         productData: {
@@ -62,6 +92,8 @@ const AdminProductEdit = () => {
           price,
           category,
           image,
+          isFeatured: isFeatured,
+          featuredImage: featuredImage ? featuredImage : undefined,
           brand,
           countInStock,
           description,
@@ -76,8 +108,24 @@ const AdminProductEdit = () => {
 
   useEffect(() => {
     dispatch(adminActions.nullifyErrors());
-    dispatch(fetchProduct({ productId, setValue, router }));
+    dispatch(
+      fetchProduct({
+        productId,
+        setValue,
+        router,
+        setIsFeatured,
+        setFeaturedSelectedImage,
+        setSelectedImage,
+      })
+    );
   }, [dispatch, productId, setValue, router]);
+
+  let requireImage = {};
+  if (isFeatured) {
+    requireImage = {
+      required: "Please upload the image.",
+    };
+  }
 
   return (
     <>
@@ -173,7 +221,7 @@ const AdminProductEdit = () => {
                     })}
                   />
                   {errors.image && (
-                    <div lassName="text-red-500 text-xs md:text-[0.8rem] leading-none absolute my-[0.25rem]">
+                    <div className="text-red-500 text-xs md:text-[0.8rem] leading-none absolute my-[0.25rem]">
                       {errors.image.message}
                     </div>
                   )}
@@ -182,7 +230,11 @@ const AdminProductEdit = () => {
                 {selectedImage && (
                   <div className="h-[300px] w-[300px] mt-2">
                     <Image
-                      src={URL.createObjectURL(selectedImage)}
+                      src={
+                        isEditingImage
+                          ? URL.createObjectURL(selectedImage)
+                          : selectedImage
+                      }
                       alt="preview"
                       width={300}
                       height={300}
@@ -211,9 +263,10 @@ const AdminProductEdit = () => {
                       <input
                         type="file"
                         className="hidden"
-                        onChange={(event) =>
-                          setSelectedImage(event.target.files[0])
-                        }
+                        onChange={(event) => {
+                          setSelectedImage(event.target.files[0]);
+                          setIsEditingImage(true);
+                        }}
                       />
                       <span className="mt-2 text-xs font-medium">
                         {selectedImage ? (
@@ -314,7 +367,106 @@ const AdminProductEdit = () => {
                   )}
                 </div>
 
-                <div className="flex justify-between">
+                <div className="mb-2">
+                  <input
+                    className="p-2 outline-none focus:ring-0 cursor-pointer"
+                    id="isFeatured"
+                    type="checkbox"
+                    onClick={(event) => setIsFeatured(event.target.checked)}
+                    {...register("isFeatured")}
+                  />
+                  <label className="mx-2" htmlFor="isFeatured">
+                    Is Featured ?
+                  </label>
+                </div>
+
+                {isFeatured && (
+                  <>
+                    <div className="mb-5">
+                      <label htmlFor="featuredImage">Featured Image</label>
+                      <input
+                        type="text"
+                        className="w-full rounded-md"
+                        id="featuredImage"
+                        {...register("featuredImage", requireImage)}
+                      />
+                      {errors.featuredImage && (
+                        <div className="text-red-500 text-xs md:text-[0.8rem] leading-none absolute my-[0.25rem]">
+                          {errors.featuredImage.message}
+                        </div>
+                      )}
+                    </div>
+
+                    {selectedFeaturedImage && (
+                      <div className="h-[300px] w-[300px] mt-6">
+                        <Image
+                          src={
+                            isEditingFeaturedImage
+                              ? URL.createObjectURL(selectedFeaturedImage)
+                              : selectedFeaturedImage
+                          }
+                          alt="preview"
+                          width={300}
+                          height={300}
+                        />
+                      </div>
+                    )}
+
+                    <div className="my-4 flex flex-col">
+                      <label
+                        htmlFor="image"
+                        className="text-xs font-semibold mb-1 md:text-sm"
+                      >
+                        Upload image
+                      </label>
+
+                      <div className="flex items-center w-full gap-10 my-1">
+                        <label
+                          className={[
+                            `w-32 flex flex-col items-center bg-white rounded-md shadow-md tracking-wide border border-blue cursor-pointer pb-2 ease-linear transition-all duration-150`,
+                            selectedFeaturedImage
+                              ? "text-white bg-purple-600"
+                              : "bg-white text-purple-600",
+                          ].join(" ")}
+                        >
+                          <i className="fas fa-cloud-upload-alt fa-3x"></i>
+                          <input
+                            type="file"
+                            className="hidden"
+                            onChange={(event) => {
+                              setFeaturedSelectedImage(event.target.files[0]);
+                              setIsEditingFeaturedImage(true);
+                            }}
+                          />
+                          <span className="mt-2 text-xs font-medium">
+                            {selectedFeaturedImage ? (
+                              <span>Image Selected</span>
+                            ) : (
+                              <span>Select Image</span>
+                            )}
+                          </span>
+                        </label>
+
+                        <div>
+                          <button
+                            type="button"
+                            className="inline-block px-3 py-2 bg-green-500 text-white font-medium text-xs rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out"
+                            onClick={uploadFeaturedImageHandler}
+                            disabled={loadingFeaturedImageUpload}
+                          >
+                            {loadingFeaturedImageUpload ? (
+                              <LoadingSpinner className="mx-auto w-[2.5rem] h-4 text-blue-100 animate-spin dark:text-purple-600 fill-white" />
+                            ) : (
+                              <>Upload</>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div className="flex justify-between mt-10">
                   <Link href={`/admin/products`}>
                     <button className="default-button">Back </button>
                   </Link>

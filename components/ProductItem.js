@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 import { cartActions } from "../utils/store/reducers/cart";
-import ReactStars from "react-rating-stars-component";
+import Rating from "@mui/material/Rating";
 
 const ProductItem = ({ product, addToCartHandler }) => {
   const dispatch = useDispatch();
@@ -30,17 +30,8 @@ const ProductItem = ({ product, addToCartHandler }) => {
             <h2 className="text-sm mb-1 font-semibold">{product.name}</h2>
           </a>
         </Link>
-        <div className="pointer-events-none">
-          <ReactStars
-            key={Math.random()}
-            count={5}
-            value={product.rating}
-            isHalf={true}
-            className="text-xs"
-            classNames="text-[10px]"
-            size={28}
-            activeColor="#ffd700"
-          />
+        <div>
+          <Rating value={product.rating} readOnly />
         </div>
         <p className="my-[0.4rem]">{product.brand}</p>
         <p>₹{product.price}</p>

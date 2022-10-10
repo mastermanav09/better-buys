@@ -20,7 +20,6 @@ export const fetchReviews = createAsyncThunk(
       }
     } catch (error) {
       dispatch(productActions.fetchFail(getError(error)));
-      toast.error(getError(error));
     }
   }
 );
@@ -32,7 +31,7 @@ export const fetchCategories = createAsyncThunk(
 
     try {
       const { data } = await axios.get("/api/products/categories");
-      setCategories(data);
+      setCategories(data.categories);
     } catch (error) {
       toast.error(getError(error));
     }
@@ -58,7 +57,30 @@ export const postReview = createAsyncThunk(
       dispatch(fetchReviews({ productId, setReviews, setShowModal }));
     } catch (error) {
       dispatch(productActions.postFail(getError(error)));
-      toast.error("Something went wrong!");
+      toast.error(getError(error));
+    }
+  }
+);
+
+export const getCategoriesAndBrands = createAsyncThunk(
+  "admin/getCategoriesAndBrands",
+  async (_, { dispatch }) => {
+    toast.clearWaitingQueue();
+
+    try {
+      const { data } = await axios({
+        url: "/api/products/categories",
+        method: "GET",
+      });
+
+      dispatch(
+        productActions.setCategoriesAndBrands({
+          categories: data.categories,
+          brands: data.brands,
+        })
+      );
+    } catch (error) {
+      toast.error("Cannot load categories/brands!");
     }
   }
 );
@@ -69,6 +91,8 @@ const productSlice = createSlice({
     isPostReviewLoading: false,
     isLoading: false,
     error: "",
+    allCategories: [],
+    allBrands: [],
   },
 
   reducers: {
@@ -101,6 +125,11 @@ const productSlice = createSlice({
     postFail(state, action) {
       state.isPostReviewLoading = false;
       state.error = action.payload;
+    },
+
+    setCategoriesAndBrands(state, action) {
+      state.allCategories = action.payload.categories;
+      state.allBrands = action.payload.brands;
     },
   },
 });

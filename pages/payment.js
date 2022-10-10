@@ -65,7 +65,7 @@ const Payment = () => {
           <h1 className="text-xl font-semibold">Payment Method</h1>
           <Wallet />
         </div>
-        {["Paytm", "Stripe", "Cash On Delivery"].map((payment) => (
+        {["Paytm", "Cash On Delivery"].map((payment) => (
           <div key={payment} className="mb-4">
             <input
               name="paymentMethod"

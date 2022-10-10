@@ -14,6 +14,7 @@ import { adminActions } from "../utils/store/reducers/admin";
 import HamburgerButton from "./svg/HamburgerButton";
 import { fetchCategories } from "../utils/store/reducers/product";
 import { useRouter } from "next/router";
+import { useRef } from "react";
 
 const Layout = ({ children }) => {
   const { status, data: session } = useSession();
@@ -24,6 +25,7 @@ const Layout = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const searchQueryInputRef = useRef();
 
   useEffect(() => {
     if (Array.isArray(cartItems)) {
@@ -44,7 +46,14 @@ const Layout = ({ children }) => {
 
   const submitQueryHandler = async (event) => {
     event.preventDefault();
-    router.push(`/search?query=${query}`);
+    const searchText = searchQueryInputRef.current.value;
+    router.push(
+      `/search?query=${
+        searchText.charAt(0).toLowerCase() + searchText.slice(1)
+      }`
+    );
+
+    searchQueryInputRef.current.value = "";
   };
 
   const fetchCategoriesHandler = async () => {
@@ -82,7 +91,9 @@ const Layout = ({ children }) => {
             <div className="flex items-center gap-2">
               <HamburgerButton showSidebar={showSidebar} />
               <Link href="/">
-                <a className="text-lg font-extrabold text-white">Better Buys</a>
+                <a className="text-base md:text-lg font-extrabold text-white">
+                  Better Buys
+                </a>
               </Link>
             </div>
             <form
@@ -113,6 +124,7 @@ const Layout = ({ children }) => {
                   placeholder="Search"
                   required
                   onChange={queryChangeHandler}
+                  ref={searchQueryInputRef}
                 />
               </div>
               <button
@@ -137,12 +149,12 @@ const Layout = ({ children }) => {
                 </svg>
               </button>
             </form>{" "}
-            <div>
+            <div className="text-sm md:text-base">
               <Link href="/cart">
-                <a className="p-2">
-                  Cart
+                <a className="p-2 inline-flex items-center">
+                  <span> Cart</span>
                   {cartItemsCount > 0 && (
-                    <span className="ml-1 rounded-full bg-blue-600 md:px-2 md:py-1 md:text-xs font-bold text-white px-[0.4rem] py-[0.2rem] text-[0.55rem]">
+                    <span className="ml-1 rounded-full bg-blue-600 md:px-2 md:py-1 md:text-xs font-bold text-white px-[0.45rem] text-[0.6rem]">
                       {cartItemsCount}
                     </span>
                   )}

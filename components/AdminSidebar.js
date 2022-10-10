@@ -45,17 +45,18 @@ const AdminSidebar = (props) => {
           </div>
 
           {navLinks.map((link, index) => (
-            <NavLink
-              key={index}
-              className={[
-                `p-2.5 my-2 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-500 text-white`,
-                link.path === pathname ? "bg-blue-600" : "",
-              ].join(" ")}
-              href={link.path}
-            >
-              <span className="text-[15px] ml-4 text-gray-200">
-                {link.title}
-              </span>
+            <NavLink key={index} href={link.path}>
+              <a
+                className={[
+                  `p-2.5 my-2 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-blue-500 text-white`,
+                  link.path === pathname ? "bg-blue-600" : "",
+                ].join(" ")}
+                onClick={() => closeSidebarHandler(false)}
+              >
+                <span className="text-[15px] ml-4 text-gray-200">
+                  {link.title}
+                </span>
+              </a>
             </NavLink>
           ))}
         </div>

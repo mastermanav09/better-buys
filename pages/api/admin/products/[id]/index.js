@@ -39,6 +39,7 @@ const putHandler = async (req, res) => {
     const image = req.body.image;
     const countInStock = req.body.countInStock;
     const description = req.body.description;
+    const isFeatured = req.body.isFeatured;
 
     if (
       isNaN(price) ||
@@ -64,6 +65,8 @@ const putHandler = async (req, res) => {
       brand: brand,
       countInStock: countInStock,
       description: description,
+      isFeatured: isFeatured,
+      featuredImage: isFeatured ? req.body?.featuredImage : undefined,
     });
 
     res.status(204).json({ message: "Product updated successfully!" });

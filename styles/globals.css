@@ -6,7 +6,7 @@
 
 html,
 body {
-  padding: 0;
+  padding: 0 !important;
   margin: 0;
   font-family: "Noto Sans", "Roboto", Segoe UI, Helvetica Neue, sans-serif;
 }
@@ -52,7 +52,7 @@ a {
 }
 
 .primary-button {
-  @apply rounded sm:py-2 sm:px-4 py-[0.35rem] px-[0.6rem] outline-none text-[0.65rem] sm:text-[0.7rem] xl:text-[0.8rem] text-white;
+  @apply rounded sm:py-2 sm:px-4 py-[0.45rem] px-[0.6rem] outline-none text-[0.70rem] sm:text-[0.7rem] xl:text-[0.8rem] text-white;
   background-color: rgb(71 85 105);
 }
 
@@ -65,7 +65,7 @@ a {
 }
 
 .default-button {
-  @apply rounded sm:py-2 sm:px-4 py-[0.35rem] px-[0.6rem] bg-white text-[0.65rem] sm:text-xs text-black border-2 font-semibold;
+  @apply rounded sm:py-2 sm:px-4 py-[0.45rem] px-[0.6rem] bg-white text-[0.70rem] sm:text-xs text-black border-2 font-semibold;
 
   border-color: rgb(100 116 139);
 }

@@ -48,8 +48,22 @@ const Sidebar = (props) => {
         <h2 className="text-gray-800 py-2 px-7 mb-2 bg-gray-200">Categories</h2>
 
         <ul className="relative px-1">
+          <li
+            className="relative"
+            onClick={() => dispatch(userActions.toggleSidebar(false))}
+          >
+            <Link href="/search">
+              <a className="flex items-center text-sm py-4 pl-12 pr-6 h-6 overflow-hidden text-gray-700 text-ellipsis whitespace-nowrap rounded hover:text-blue-600 hover:bg-blue-100 ">
+                All
+              </a>
+            </Link>
+          </li>
           {props.categories.map((category, index) => (
-            <li key={index} className="relative">
+            <li
+              key={index}
+              className="relative"
+              onClick={() => dispatch(userActions.toggleSidebar(false))}
+            >
               <Link
                 href={`/search?category=${
                   category.charAt(0).toLowerCase() + category.slice(1)

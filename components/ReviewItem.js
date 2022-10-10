@@ -1,5 +1,5 @@
 import React from "react";
-import ReactStars from "react-rating-stars-component";
+import Rating from "@mui/material/Rating";
 import { useState } from "react";
 
 const ReviewItem = (props) => {
@@ -26,14 +26,8 @@ const ReviewItem = (props) => {
             <p>{name}</p>
           </div>
         </div>
-        <div className="flex items-center pointer-events-none">
-          <ReactStars
-            key={rating}
-            count={5}
-            value={rating}
-            size={32}
-            activeColor="#ffd700"
-          />
+        <div className="flex items-center">
+          <Rating value={rating} readOnly />
         </div>
         <footer className="mb-5 text-sm text-gray-500 dark:text-gray-400">
           <p>

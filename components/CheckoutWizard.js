@@ -8,7 +8,7 @@ const steps = [
 ];
 const CheckoutWizard = ({ activeStep = 0 }) => {
   return (
-    <div className="mb-5 flex flex-wrap">
+    <div className="mb-5 flex flex-wrap justify-around text-sm lg:text-base">
       {steps.map((step, index) => (
         <div
           key={index}

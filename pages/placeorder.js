@@ -90,23 +90,27 @@ const PlaceOrder = () => {
         ) : (
           <div className="grid md:grid-cols-4 md:gap-5">
             <div className="overflow-x-auto md:col-span-3">
-              <div className="card p-5">
-                <h2 className="mb-2 text-lg">Shipping Address</h2>
-                <div>
+              <div className="card p-5 text-sm md:text-base">
+                <h2 className="mb-1 text-lg">Shipping Address</h2>
+                <div className="mb-2">
                   {userShippingdata.fullName}, {userShippingdata.address},{" "}
                   {userShippingdata.city}, {userShippingdata.postalCode},{" "}
                   {userShippingdata.state}
                 </div>
                 <div>
-                  <Link href="/shipping">Edit</Link>
+                  <Link href="/shipping">
+                    <a className="text-blue-500 ">Edit</a>
+                  </Link>
                 </div>
               </div>
 
-              <div className="card p-5">
-                <h2 className="mb-2 text-lg">Payment Method</h2>
-                <div>{paymentMethod}</div>
+              <div className="card p-5  text-sm md:text-base">
+                <h2 className="mb-1 text-lg">Payment Method</h2>
+                <div className="mb-2">{paymentMethod}</div>
                 <div>
-                  <Link href="/payment">Edit</Link>
+                  <Link href="/payment">
+                    <a className="text-blue-500 ">Edit</a>
+                  </Link>
                 </div>
               </div>
 
@@ -125,10 +129,10 @@ const PlaceOrder = () => {
                   <tbody>
                     {Array.isArray(cartItems) &&
                       cartItems.map((item) => (
-                        <tr key={item._id} className="border-b">
+                        <tr key={item._id} className="border-b overflow-auto">
                           <td>
                             <Link href={`/product/${item.slug}`}>
-                              <a className="flex items-center">
+                              <a className="flex items-center gap-1 w-max p-1">
                                 <Image
                                   src={item.image}
                                   alt={item.name}
@@ -136,7 +140,9 @@ const PlaceOrder = () => {
                                   height={50}
                                 ></Image>
                                 &nbsp;
-                                {item.name}
+                                <span className="break-words overflow-x-auto">
+                                  {item.name}
+                                </span>
                               </a>
                             </Link>
                           </td>
