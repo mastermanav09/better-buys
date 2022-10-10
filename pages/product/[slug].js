@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ReactStars from "react-rating-stars-component";
+import Rating from "@mui/material/Rating";
 import Head from "next/head";
 import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
@@ -14,6 +14,7 @@ import PageLoader from "../../components/svg/PageLoader";
 import { fetchReviews } from "../../utils/store/reducers/product";
 import LoadingSpinner from "../../components/svg/LoadingSpinner";
 import { useEffect } from "react";
+import { getSession } from "next-auth/react";
 import ReviewItem from "../../components/ReviewItem";
 import ReviewSubmitModal from "../../components/ReviewSubmitModal";
 
@@ -25,6 +26,19 @@ const ProductItem = (props) => {
   const [reviews, setReviews] = useState([]);
   const { isLoading } = useSelector((state) => state.product);
   const [showModal, setShowModal] = useState(false);
+  const [session, setSession] = useState(null);
+
+  useEffect(() => {
+    const getSessionHandler = async () => {
+      let session = await getSession();
+      console.log(session);
+      if (session) {
+        setSession(session);
+      }
+    };
+
+    getSessionHandler();
+  }, []);
 
   useEffect(() => {
     dispatch(fetchReviews({ productId: product._id, setReviews }));
@@ -77,7 +91,6 @@ const ProductItem = (props) => {
     }
   };
 
-  console.log(product.numRatings);
   let totalRatings = 0;
   let fiveStarRatingPct = 0;
   let fourStarRatingPct = 0;
@@ -113,7 +126,7 @@ const ProductItem = (props) => {
       );
     }
   }
-
+  console.log(session);
   return (
     <>
       <Head>
@@ -236,17 +249,11 @@ const ProductItem = (props) => {
                 </Link>
               </h2>
               <div className="flex items-center gap-2">
-                <div className="pointer-events-none text-xl">
-                  <ReactStars
-                    count={5}
-                    value={product.rating}
-                    isHalf={true}
-                    size={42}
-                    activeColor="#ffd700"
-                  />
+                <div className="text-xl">
+                  <Rating value={product.rating} readOnly />
                 </div>
 
-                <div className="mt-[0.25rem]">{product.rating} out of 5</div>
+                <div className="mb-[0.4rem]">{product.rating} out of 5</div>
               </div>
 
               {/* <Link href={`#reviews`}>
@@ -359,16 +366,32 @@ const ProductItem = (props) => {
                     <LoadingSpinner className="mx-auto w-6 h-6 text-gray-300 animate-spin dark:text-purple-600 fill-blue-600 my-5" />
                   ) : (
                     <>
-                      {reviews.length === 0 ? (
-                        <div className="text-center font-medium text-sm">
-                          No reviews
-                        </div>
+                      {!session ? (
+                        <p className="text-center font-medium text-base tracking-wider">
+                          Please{" "}
+                          <Link
+                            href={`/login?redirect=/product/${product.slug}`}
+                          >
+                            <a className="text-yellow-400 font-semibold">
+                              login
+                            </a>
+                          </Link>{" "}
+                          to see reviews.
+                        </p>
                       ) : (
-                        <ul>
-                          {reviews.map((review) => (
-                            <ReviewItem key={review._id} review={review} />
-                          ))}
-                        </ul>
+                        <>
+                          {reviews.length === 0 ? (
+                            <div className="text-center font-medium text-sm">
+                              No reviews
+                            </div>
+                          ) : (
+                            <ul>
+                              {reviews.map((review) => (
+                                <ReviewItem key={review._id} review={review} />
+                              ))}
+                            </ul>
+                          )}
+                        </>
                       )}
                     </>
                   )}

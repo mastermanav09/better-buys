@@ -18,7 +18,11 @@ import {
   Pagination,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import ReactStars from "react-rating-stars-component";
+import Rating from "@mui/material/Rating";
+import PageLoader from "../components/svg/PageLoader";
+import { useEffect } from "react";
+import { getError } from "../utils/error";
+import { getCategoriesAndBrands } from "../utils/store/reducers/product";
 
 const PAGE_SIZE = 6;
 
@@ -60,7 +64,7 @@ const Search = (props) => {
   const router = useRouter();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
-  // const Pagination = usePagination();
+  const { allCategories, allBrands } = useSelector((state) => state.product);
 
   const {
     query = "all",
@@ -71,7 +75,7 @@ const Search = (props) => {
     sort = "featured",
   } = router.query;
 
-  const { products, countProducts, categories, brands, pages } = props;
+  const { products, countProducts, pages } = props;
 
   const filterSearch = ({
     page,
@@ -97,11 +101,24 @@ const Search = (props) => {
     if (min) query.min ? query.min : query.min === 0 ? 0 : min;
     if (max) query.max ? query.max : query.max === 0 ? 0 : max;
 
+    if (
+      query.hasOwnProperty("category") ||
+      query.hasOwnProperty("price") ||
+      query.hasOwnProperty("rating") ||
+      query.hasOwnProperty("brand")
+    ) {
+      delete query.query;
+    }
+
     router.push({
-      pathname: path,
+      pathname: query ? null : path,
       query: query,
     });
   };
+
+  useEffect(() => {
+    dispatch(getCategoriesAndBrands());
+  }, [dispatch]);
 
   const categoryHandler = (event) => {
     filterSearch({ category: event.target.value });
@@ -154,8 +171,7 @@ const Search = (props) => {
       toast.success("Added to cart");
       toast.clearWaitingQueue();
     } catch (error) {
-      console.log(error);
-      toast.error("Cannot add product!");
+      toast.error(getError(error));
     }
   };
 
@@ -163,18 +179,20 @@ const Search = (props) => {
     await checkAvailability(product);
   };
 
+  if (!products || allCategories.length === 0 || allBrands.length === 0) {
+    return <PageLoader />;
+  }
+
   return (
     <>
       <Head>
         <title>Search products</title>
       </Head>
-      <div className="w-full flex mt-5 my-1">
-        <div className="flex items-center gap-1 text-sm md:text-base xs-max:text-xs">
+
+      <div className="w-full flex flex-col lg:flex-row mt-5">
+        <div className="flex items-center gap-1 text-sm md:text-base xs-max:text-xs my-0.5 lg:my-0">
           {products.length === 0 ? "No" : countProducts}{" "}
           {countProducts === 1 ? <>Result</> : <>Results</>}
-          {query !== "all" &&
-            query !== "" &&
-            " : " + query.charAt(0).toUpperCase() + query.slice(1)}
           {category !== "all" &&
             " : " + category.charAt(0).toUpperCase() + category.slice(1)}
           {brand !== "all" &&
@@ -182,8 +200,7 @@ const Search = (props) => {
           {price !== "all" &&
             " : " + price.charAt(0).toUpperCase() + price.slice(1)}
           {rating !== "all" && " : Rating " + rating + " & Up"}
-          {(query !== "all" && query !== "") ||
-          category !== "all" ||
+          {category !== "all" ||
           brand !== "all" ||
           rating !== "all" ||
           price !== "all" ? (
@@ -194,7 +211,7 @@ const Search = (props) => {
                 viewBox="0 0 24 24"
                 style={{ strokeWidth: "1.7px" }}
                 stroke="currentColor"
-                className="w-5 h-5 bg-gray-700 text-white rounded-full"
+                className="w-4 h-4 md:w-5 md:h-5 bg-gray-700 text-white rounded-full mt-0.5"
               >
                 <path
                   style={{ strokeLinecap: "round", strokeLinejoin: "round" }}
@@ -206,22 +223,39 @@ const Search = (props) => {
             <></>
           )}
         </div>
-        <div className="ml-auto inline-flex items-center text-sm md:text-base xs-max:text-xs">
-          <span className="mx-1.5">Sort by</span>
-          <Select value={sort} onChange={sortHandler}>
-            <MenuItem value="featured">Featured</MenuItem>
-            <MenuItem value="lowest">Price : Low to High</MenuItem>
-            <MenuItem value="highest">Price : High to Low</MenuItem>
-            <MenuItem value="toprated">Customer Reviews</MenuItem>
-            <MenuItem value="newest">Newest Arrivals</MenuItem>
-          </Select>
+        <div className="lg:ml-auto my-0.5 lg:my-0 inline-flex items-center text-sm md:text-base xs-max:text-xs">
+          <span>Sort by</span>
+          <div className="mx-1.5">
+            <Select
+              value={sort}
+              onChange={sortHandler}
+              variant="standard"
+              className="text-sm lg:text-base"
+            >
+              <MenuItem value="featured" className="text-sm lg:text-base">
+                Featured
+              </MenuItem>
+              <MenuItem value="lowest" className="text-sm lg:text-base">
+                Price : Low to High
+              </MenuItem>
+              <MenuItem value="highest" className="text-sm lg:text-base">
+                Price : High to Low
+              </MenuItem>
+              <MenuItem value="toprated" className="text-sm lg:text-base">
+                Customer Reviews
+              </MenuItem>
+              <MenuItem value="newest" className="text-sm lg:text-base">
+                Newest Arrivals
+              </MenuItem>
+            </Select>
+          </div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
             style={{ strokeWidth: "1.5px" }}
             stroke="currentColor"
-            className="w-6 h-6 text-gray-500 sm:hidden mx-1 cursor-pointer"
+            className="w-6 h-6 text-gray-500 sm:hidden mx-1 cursor-pointer ml-auto"
           >
             <path
               style={{ strokeLinecap: "round", strokeLinejoin: "round" }}
@@ -239,15 +273,24 @@ const Search = (props) => {
                 <Typography style={{ fontSize: "0.85rem", color: "gray" }}>
                   Categories
                 </Typography>
-                <Select fullWidth value={category} onChange={categoryHandler}>
-                  <MenuItem value="all">All</MenuItem>
-                  {categories &&
-                    categories.map((category) => (
+                <Select
+                  fullWidth
+                  value={category}
+                  onChange={categoryHandler}
+                  variant="standard"
+                  className="text-sm lg:text-base"
+                >
+                  <MenuItem value="all" className="text-sm lg:text-base">
+                    All
+                  </MenuItem>
+                  {allCategories &&
+                    allCategories.map((category) => (
                       <MenuItem
                         key={category}
                         value={
                           category.charAt(0).toLowerCase() + category.slice(1)
                         }
+                        className="text-sm lg:text-base"
                       >
                         {category}
                       </MenuItem>
@@ -260,13 +303,22 @@ const Search = (props) => {
                 <Typography style={{ fontSize: "0.85rem", color: "gray" }}>
                   Brands
                 </Typography>
-                <Select fullWidth value={brand} onChange={brandHandler}>
-                  <MenuItem value="all">All</MenuItem>
-                  {brands &&
-                    brands.map((brand) => (
+                <Select
+                  fullWidth
+                  value={brand}
+                  onChange={brandHandler}
+                  variant="standard"
+                  className="text-sm lg:text-base"
+                >
+                  <MenuItem value="all" className="text-sm lg:text-base">
+                    All
+                  </MenuItem>
+                  {allBrands &&
+                    allBrands.map((brand) => (
                       <MenuItem
                         key={brand}
                         value={brand.charAt(0).toLowerCase() + brand.slice(1)}
+                        className="text-sm lg:text-base"
                       >
                         {brand}
                       </MenuItem>
@@ -279,10 +331,22 @@ const Search = (props) => {
                 <Typography style={{ fontSize: "0.85rem", color: "gray" }}>
                   Prices
                 </Typography>
-                <Select fullWidth value={price} onChange={priceHandler}>
-                  <MenuItem value="all">All</MenuItem>
+                <Select
+                  fullWidth
+                  value={price}
+                  onChange={priceHandler}
+                  variant="standard"
+                  className="text-sm lg:text-base"
+                >
+                  <MenuItem value="all" className="text-sm lg:text-base">
+                    All
+                  </MenuItem>
                   {prices.map((price) => (
-                    <MenuItem key={price.value} value={price.value}>
+                    <MenuItem
+                      key={price.value}
+                      value={price.value}
+                      className="text-sm lg:text-base"
+                    >
                       {price.name}
                     </MenuItem>
                   ))}
@@ -294,18 +358,24 @@ const Search = (props) => {
                 <Typography style={{ fontSize: "0.85rem", color: "gray" }}>
                   Rating
                 </Typography>
-                <Select fullWidth value={rating} onChange={ratingHandler}>
-                  <MenuItem value="all">All</MenuItem>
+                <Select
+                  fullWidth
+                  value={rating}
+                  onChange={ratingHandler}
+                  variant="standard"
+                  className="text-sm lg:text-base"
+                >
+                  <MenuItem value="all" className="text-sm lg:text-base">
+                    All
+                  </MenuItem>
                   {ratings.map((rating) => (
-                    <MenuItem key={rating} value={rating}>
+                    <MenuItem
+                      key={rating}
+                      value={rating}
+                      className="text-sm lg:text-base"
+                    >
                       <div className="pointer-events-none flex items-center gap-1">
-                        <ReactStars
-                          key={rating}
-                          value={rating}
-                          count={5}
-                          size={28}
-                          activeColor="#ffd700"
-                        />
+                        <Rating value={rating} readOnly />
                         <Typography component="span">&amp; Up</Typography>
                       </div>
                     </MenuItem>
@@ -338,7 +408,7 @@ const Search = (props) => {
   );
 };
 
-export default dynamic(() => Promise.resolve(Search), { ssr: false });
+export default Search;
 
 export async function getServerSideProps({ query }) {
   await db.connect();
@@ -354,10 +424,7 @@ export async function getServerSideProps({ query }) {
   const queryFilter =
     searchQuery && searchQuery !== "all"
       ? {
-          name: {
-            $regex: searchQuery,
-            $options: "i",
-          },
+          category: { $regex: searchQuery, $options: "i" },
         }
       : {};
 
@@ -407,8 +474,6 @@ export async function getServerSideProps({ query }) {
       ? { createdAt: -1 }
       : { _id: -1 };
 
-  const categories = await Product.find().distinct("category");
-  const brands = await Product.find().distinct("brand");
   const productDocs = await Product.find(
     {
       ...queryFilter,
@@ -424,23 +489,13 @@ export async function getServerSideProps({ query }) {
     .limit(pageSize)
     .lean();
 
-  const countProducts = await Product.countDocuments({
-    ...queryFilter,
-    ...categoryFilter,
-    ...priceFilter,
-    ...brandFilter,
-    ...ratingFilter,
-  });
-
   const products = productDocs.map(db.convertDocToObj);
   return {
     props: {
       products,
-      countProducts,
+      countProducts: products.length,
       page,
-      pages: Math.ceil(countProducts / pageSize),
-      categories,
-      brands,
+      pages: Math.ceil(products.length / pageSize),
     },
   };
 }

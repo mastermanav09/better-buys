@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import ProductItem from "../components/ProductItem";
 import db from "../utils/db";
@@ -10,8 +11,13 @@ import { cartActions } from "../utils/store/reducers/cart";
 import { getSession } from "next-auth/react";
 import { setUserDetails } from "../utils/store/reducers/user";
 
+import { Carousel } from "react-responsive-carousel";
+import { NavLink } from "../components/NavLink";
+import Image from "next/image";
+import { getError } from "../utils/error";
+
 const Home = (props) => {
-  const { products } = props;
+  const { topRatedProducts, featuredProducts } = props;
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
 
@@ -37,11 +43,12 @@ const Home = (props) => {
     const quantity = existItem ? existItem.quantity + 1 : 1;
 
     try {
+      toast.clearWaitingQueue();
       const { data } = await axios.get(`/api/products/${product._id}`);
 
       if (data.countInStock < quantity) {
         toast.info("Sorry, Product is out of stock");
-        toast.clearWaitingQueue();
+
         return;
       }
 
@@ -52,9 +59,8 @@ const Home = (props) => {
       );
 
       toast.success("Added to cart");
-      toast.clearWaitingQueue();
     } catch (error) {
-      toast.error("Cannot add product!");
+      toast.error(getError(error));
     }
   };
 
@@ -68,8 +74,28 @@ const Home = (props) => {
         <title>Better Buys</title>
         <meta name="description" content="Ecommerce website" />
       </Head>
+      <div className="mt-2 mb-7 w-full">
+        <Carousel infiniteLoop={true} autoPlay={true} showThumbs={false}>
+          {featuredProducts.map((product) => (
+            <div key={product._id} className="w-full">
+              <NavLink href={`/product/${product.slug}`}>
+                <Image
+                  src={product.featuredImage}
+                  alt={product.name}
+                  width={1200}
+                  height={500}
+                  layout="responsive"
+                />
+              </NavLink>
+            </div>
+          ))}
+        </Carousel>
+      </div>
+      <h2 className="my-2 font-semibold text-lg md:text-xl ">
+        Popular Products
+      </h2>
       <div className="grid grid-cols-2 xs-max:grid-cols-1 gap-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 text-xs lg:text-sm md:gap-4">
-        {products.map((product) => (
+        {topRatedProducts.map((product) => (
           <ProductItem
             key={product.slug}
             product={product}
@@ -86,12 +112,22 @@ export default Home;
 export async function getStaticProps() {
   await db.connect();
 
-  const products = await Product.find()
+  const featuredProducts = await Product.find({ isFeatured: true })
     .select("-reviews -numReviews -numRatings")
-    .lean();
+    .lean()
+    .limit(3);
+
+  const topRatedProducts = await Product.find()
+    .select("-reviews -numReviews -numRatings")
+    .lean()
+    .sort({
+      rating: -1,
+    })
+    .limit(6);
   return {
     props: {
-      products: products.map(db.convertDocToObj),
+      featuredProducts: featuredProducts.map(db.convertDocToObj),
+      topRatedProducts: topRatedProducts.map(db.convertDocToObj),
     },
 
     revalidate: 3600,

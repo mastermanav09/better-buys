@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ReactStars from "react-rating-stars-component";
+import Rating from "@mui/material/Rating";
 import { useDispatch, useSelector } from "react-redux";
 import { postReview } from "../utils/store/reducers/product";
 import LoadingSpinner from "./svg/LoadingSpinner";
@@ -11,7 +11,7 @@ const ReviewSubmitModal = (props) => {
   const { isPostReviewLoading } = useSelector((state) => state.product);
 
   const ratingChanged = (newRating) => {
-    setRating(newRating);
+    setRating(+newRating);
   };
 
   const reviewHandler = (event) => {
@@ -21,12 +21,12 @@ const ReviewSubmitModal = (props) => {
   const submitReviewHandler = (event) => {
     event.preventDefault();
 
-    if (rating < 1 || rating > 5 || review.trim().length == 0) {
+    if (rating < 1 || rating > 5 || !review || review.trim().length == 0) {
       window.alert("Please enter your rating and review!");
       return;
     }
 
-    if (review.trim().length < 3) {
+    if (!review || review.trim().length < 3) {
       window.alert("Review should be of at least 3 characters!");
       return;
     }
@@ -60,11 +60,8 @@ const ReviewSubmitModal = (props) => {
                 <span className="text-sm mt-[0.2rem] sm:block hidden">
                   Rate our product
                 </span>
-                <ReactStars
-                  count={5}
-                  size={38}
-                  activeColor="#ffd700"
-                  onChange={ratingChanged}
+                <Rating
+                  onClick={(event) => ratingChanged(event.target.value)}
                 />
               </div>
               <div>

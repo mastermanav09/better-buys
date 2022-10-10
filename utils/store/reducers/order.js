@@ -23,7 +23,7 @@ export const initiatePayment = createAsyncThunk(
   async ({ orderData, router }, { dispatch }) => {
     try {
       dispatch(orderActions.payRequest());
-      console.log(orderData.paymentMethod);
+
       const { data: res, status } = await axios({
         method: "POST",
         url: "/api/orders/preTransaction",

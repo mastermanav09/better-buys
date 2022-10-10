@@ -74,20 +74,37 @@ export const fetchUser = createAsyncThunk(
 
 export const fetchProduct = createAsyncThunk(
   "admin/fetchProduct",
-  async ({ productId, setValue, router }, { dispatch }) => {
+  async (
+    {
+      productId,
+      setValue,
+      router,
+      setIsFeatured,
+      setSelectedImage,
+      setFeaturedSelectedImage,
+    },
+    { dispatch }
+  ) => {
     try {
       dispatch(adminActions.fetchRequest());
       const { data } = await axios.get(`/api/admin/products/${productId}`);
       dispatch(adminActions.fetchProductSuccess(data));
-      console.log(data);
+
       setValue("name", data.name);
       setValue("slug", data.slug);
       setValue("price", data.price);
       setValue("image", data.image);
+      setSelectedImage(data.image);
       setValue("category", data.category);
       setValue("brand", data.brand);
       setValue("countInStock", data.countInStock);
       setValue("description", data.description);
+      setValue("isFeatured", data.isFeatured);
+      setValue("featuredImage", data.featuredImage);
+      if (data.isFeatured) {
+        setFeaturedSelectedImage(data.featuredImage);
+      }
+      setIsFeatured(data.isFeatured);
     } catch (error) {
       router.replace("/error");
       dispatch(adminActions.fetchFail(getError(error)));
@@ -192,33 +209,57 @@ export const deleteUser = createAsyncThunk(
 
 export const uploadProductImage = createAsyncThunk(
   "admin/uploadProductImage",
-  async ({ selectedImage, setValue }, { dispatch }) => {
+  async (
+    {
+      selectedImage,
+      selectedFeaturedImage,
+      setValue,
+      isFeaturedImage,
+      setLoadingFeaturedImageUpload,
+    },
+    { dispatch }
+  ) => {
     toast.clearWaitingQueue();
 
     const url = `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`;
 
     try {
-      dispatch(adminActions.uploadRequest());
+      if (setLoadingFeaturedImageUpload) {
+        setLoadingFeaturedImageUpload(true);
+      } else {
+        dispatch(adminActions.uploadRequest());
+      }
 
       const {
         data: { signature, timestamp },
       } = await axios("/api/admin/cloudinary-sign");
 
       const formData = new FormData();
-      formData.append("file", selectedImage);
+      if (isFeaturedImage) {
+        formData.append("file", selectedFeaturedImage);
+      } else {
+        formData.append("file", selectedImage);
+      }
       formData.append("signature", signature);
       formData.append("timestamp", timestamp);
       formData.append("api_key", process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY);
 
       const { data } = await axios.post(url, formData);
-      dispatch(adminActions.uploadSuccess());
 
-      setValue("image", data.secure_url);
+      dispatch(adminActions.uploadSuccess());
+      if (isFeaturedImage) {
+        setValue("featuredImage", data.secure_url);
+      } else {
+        setValue("image", data.secure_url);
+      }
+
       toast.success("File uploaded successfully!");
     } catch (error) {
       dispatch(adminActions.uploadFail(getError(error)));
       toast.error(getError(error));
     }
+
+    setLoadingFeaturedImageUpload(false);
   }
 );
 

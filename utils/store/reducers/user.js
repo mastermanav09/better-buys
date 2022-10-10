@@ -172,6 +172,15 @@ export const placeOrder = createAsyncThunk(
   async ({ shippingData, setIsLoading, router }, { dispatch }) => {
     try {
       setIsLoading(true);
+
+      if (
+        shippingData.paymentMethod !== "Paytm" &&
+        shippingData.paymentMethod !== "Cash On Delivery"
+      ) {
+        const error = new Error("Invalid payment method!");
+        throw error;
+      }
+
       const { data: res } = await axios({
         method: "POST",
         url: "/api/orders/",
@@ -196,7 +205,7 @@ export const placeOrder = createAsyncThunk(
       await redirectUser().then(() =>
         setTimeout(() => {
           dispatch(cartActions.resetCart());
-        }, 2000)
+        }, 1500)
       );
 
       Cookies.remove("cart");
