@@ -1,5 +1,5 @@
 import Head from "next/head";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
 import { Bar } from "react-chartjs-2";
 import {
@@ -41,6 +41,7 @@ const AdminDashboard = () => {
   const router = useRouter();
   const dispatch = useDispatch();
   const { isLoading, summary, error } = useSelector((state) => state.admin);
+  const ref = useRef(null);
 
   useEffect(() => {
     dispatch(fetchSummary());
@@ -55,6 +56,13 @@ const AdminDashboard = () => {
         data: summary.salesData.map((val) => val.totalSales),
       },
     ],
+  };
+
+  const scrollToSalesReport = (elementRef) => {
+    window.scrollTo({
+      top: elementRef.current?.offsetTop,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -72,42 +80,82 @@ const AdminDashboard = () => {
             error && <div className="alert-error text-center">{error}</div>
           ) : (
             <div className="my-16">
-              <h1 className="mb-4 text-center text-xl md:text-left md:text-3xl lg:text-4xl">
+              <h1 className="sm:mb-4 text-center text-2xl md:text-left md:text-3xl lg:text-4xl">
                 Admin Dashboard
               </h1>
               <div>
-                <div className="grid grid-cols-1 md:grid-cols-4">
+                <div className="grid grid-cols-1 lg:grid-cols-4 md:grid-cols-2">
                   <div className="card m-5 p-5">
-                    <p className="text-3xl">₹{summary.ordersPrice}</p>
-                    <p>Sales</p>
-                    <Link href="/admin/orders">View sales</Link>
+                    <p className="text-xl lg:text-2xl xl:text-3xl">
+                      ₹{summary.ordersPrice}
+                    </p>
+                    <p className="font-bold text-indigo-800">Sales</p>
+                    <Link href="/admin/dashboard/#sales-report">
+                      <a>
+                        <button
+                          className="text-[0.8rem] bg-purple-600 px-3 py-1 mt-2 rounded text-white hover:bg-purple-500"
+                          onClick={() => scrollToSalesReport(ref)}
+                        >
+                          View sales
+                        </button>
+                      </a>
+                    </Link>
                   </div>
                   <div className="card m-5 p-5">
-                    <p className="text-3xl">{summary.ordersCount}</p>
-                    <p>Orders</p>
-                    <Link href="/admin/orders">View orders</Link>
+                    <p className="text-xl lg:text-2xl xl:text-3xl">
+                      {summary.ordersCount}
+                    </p>
+                    <p className="font-bold text-indigo-800">Orders</p>
+                    <Link href="/admin/orders">
+                      <a>
+                        <button className="text-[0.8rem] bg-purple-600 px-3 py-1 mt-2 rounded text-white hover:bg-purple-500">
+                          View orders
+                        </button>
+                      </a>
+                    </Link>
                   </div>{" "}
                   <div className="card m-5 p-5">
-                    <p className="text-3xl">{summary.productsCount}</p>
-                    <p>Products</p>
-                    <Link href="/admin/products">View products</Link>
+                    <p className="text-xl lg:text-2xl xl:text-3xl">
+                      {summary.productsCount}
+                    </p>
+                    <p className="font-bold text-indigo-800"> Products</p>
+                    <Link href="/admin/products">
+                      <a>
+                        <button className="text-[0.8rem] bg-purple-600 px-3 py-1 mt-2 rounded text-white hover:bg-purple-500">
+                          View products
+                        </button>
+                      </a>
+                    </Link>
                   </div>{" "}
                   <div className="card m-5 p-5">
-                    <p className="text-3xl">{summary.usersCount}</p>
-                    <p>Users</p>
-                    <Link href="/admin/users">View users</Link>
+                    <p className="text-xl lg:text-2xl xl:text-3xl">
+                      {summary.usersCount}
+                    </p>
+                    <p className="font-bold text-indigo-800">Users</p>
+                    <Link href="/admin/users">
+                      <a>
+                        <button className="text-[0.8rem] bg-purple-600 px-3 py-1 mt-2 rounded text-white hover:bg-purple-500">
+                          View Users
+                        </button>
+                      </a>
+                    </Link>
                   </div>{" "}
                 </div>
-                <h2 className="text-xl">Sales Report</h2>
-                <Bar
-                  options={{
-                    legend: {
-                      display: true,
-                      position: "right",
-                    },
-                  }}
-                  data={data}
-                />
+                <div ref={ref}></div>
+                <div className="my-4">
+                  <h2 className="mb-4 text-center text-lg md:text-left">
+                    Sales Report
+                  </h2>
+                  <Bar
+                    options={{
+                      legend: {
+                        display: true,
+                        position: "right",
+                      },
+                    }}
+                    data={data}
+                  />
+                </div>
               </div>
             </div>
           )}

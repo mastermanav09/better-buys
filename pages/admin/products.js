@@ -65,7 +65,7 @@ const AdminProducts = () => {
           ) : (
             <div className="my-16">
               <div className="flex justify-between items-center mb-8">
-                <h1 className="text-center text-xl md:text-left md:text-3xl lg:text-4xl align-middle">
+                <h1 className="text-center text-2xl md:text-left md:text-3xl lg:text-4xl align-middle">
                   Products
                 </h1>
 
@@ -96,7 +96,7 @@ const AdminProducts = () => {
                   </thead>
                   <tbody>
                     {products.map((product) => (
-                      <tr key={product._id} className="border-b">
+                      <tr key={product._id} className="border-b text-sm">
                         <td className="p-5">{product._id.substr(20, 24)}</td>
                         <td className="p-5">{product.name}</td>
                         <td className="p-5">₹{product.price}</td>

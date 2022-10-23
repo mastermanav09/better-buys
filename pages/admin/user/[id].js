@@ -66,7 +66,7 @@ const UserEdit = () => {
           ) : (
             <div className="my-16">
               <h1 className="mb-4 text-center text-xl md:text-left md:text-2xl">
-                <span className="text-xl">Edit Product</span>{" "}
+                <span className="text-xl">Edit User</span>{" "}
                 <span className="text-green-600">{userId}</span>
               </h1>
 

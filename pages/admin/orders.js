@@ -33,10 +33,11 @@ const AdminOrders = () => {
           ) : (
             <div className="my-16">
               <div className="mb-8">
-                <h1 className="mb-4 text-center text-xl md:text-left md:text-3xl lg:text-4xl">
+                <h1 className="text-center text-2xl md:text-left md:text-3xl lg:text-4xl align-middle">
                   Orders
                 </h1>
               </div>
+
               <div className="overflow-x-auto">
                 <table className="min-w-full">
                   <thead className="border-b">
@@ -52,7 +53,7 @@ const AdminOrders = () => {
                   </thead>
                   <tbody>
                     {orders.map((order) => (
-                      <tr key={order._id} className="border-b">
+                      <tr key={order._id} className="border-b text-sm">
                         <td className="p-5">{order._id.substr(20, 24)}</td>
                         <td className="p-5">
                           {order.user
