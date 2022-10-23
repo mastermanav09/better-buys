@@ -69,7 +69,7 @@ const Users = () => {
                   <tbody>
                     {users.map((user) => (
                       <tr key={user._id} className="border-b">
-                        <td className="p-5">{user._id.substring(20, 24)}</td>
+                        <td className="p-5">{user._id.substr(20, 24)}</td>
                         <td className="p-5">{user.credentials.name}</td>
                         <td className="p-5">{user.credentials.email}</td>
                         <td className="p-5">

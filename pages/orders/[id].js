@@ -4,7 +4,11 @@ import { useRouter } from "next/router";
 import PageLoader from "../../components/svg/PageLoader";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrder, orderActions } from "../../utils/store/reducers/order";
+import {
+  downloadInvoice,
+  fetchOrder,
+  orderActions,
+} from "../../utils/store/reducers/order";
 import Link from "next/link";
 import Image from "next/image";
 import PaytmButton from "../../components/PaytmButton";
@@ -225,6 +229,18 @@ const Order = () => {
                     <div>₹{order.totalPrice}</div>
                   </div>
                 </li>
+
+                {order.isPaid && (
+                  <li className="mt-3">
+                    <Link href={`/api/orders/${orderId}/getInvoice`}>
+                      <a className="w-full block">
+                        <button className="w-full primary-button">
+                          Download Invoice
+                        </button>
+                      </a>
+                    </Link>
+                  </li>
+                )}
 
                 {!order.isPaid && (
                   <li>
