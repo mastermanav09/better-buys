@@ -9,6 +9,7 @@ import { placeOrder } from "../utils/store/reducers/user";
 import PageLoader from "../components/svg/PageLoader";
 import PlaceOrderIcon from "../components/svg/PlaceOrderIcon";
 import { toast } from "react-toastify";
+import LoadingSpinner from "../components/svg/LoadingSpinner";
 
 const PlaceOrder = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -57,13 +58,13 @@ const PlaceOrder = () => {
         setIsLoading,
       })
     );
-
-    setIsLoading(false);
   };
 
-  if (Object.keys(userShippingdata).length === 0 || isLoading) {
+  if (Object.keys(userShippingdata).length === 0) {
     return <PageLoader />;
   }
+
+  console.log(isLoading);
 
   return (
     <>
@@ -88,9 +89,9 @@ const PlaceOrder = () => {
             Cart is empty. <Link href="/">Go Shopping</Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-4 md:gap-5">
+          <div className="grid md:grid-cols-4 md:gap-5 my-5">
             <div className="overflow-x-auto md:col-span-3">
-              <div className="card p-5 text-sm md:text-base">
+              <div className="card p-5 text-sm">
                 <h2 className="mb-1 text-lg">Shipping Address</h2>
                 <div className="mb-2">
                   {userShippingdata.fullName}, {userShippingdata.address},{" "}
@@ -104,7 +105,7 @@ const PlaceOrder = () => {
                 </div>
               </div>
 
-              <div className="card p-5  text-sm md:text-base">
+              <div className="card p-5 text-sm">
                 <h2 className="mb-1 text-lg">Payment Method</h2>
                 <div className="mb-2">{paymentMethod}</div>
                 <div>
@@ -114,53 +115,54 @@ const PlaceOrder = () => {
                 </div>
               </div>
 
-              <div className="card overflow-x-auto p-5">
+              <div className="card p-5 md:col-span-4 xl:col-span-3">
                 <h2 className="mb-2 text-lg">Order Items</h2>
-                <table className="min-w-full">
-                  <thead className="border-b">
-                    <tr>
-                      <th className="px-4 text-left">Item</th>
-                      <th className="p-4 text-right">Quantity</th>
-                      <th className="p-4 text-right">Price</th>
-                      <th className="p-4 text-right">Subtotal</th>
-                    </tr>
-                  </thead>
+                <div className="overflow-x-auto text-sm scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-blue-300 p-0">
+                  <table className="min-w-full">
+                    <thead className="border-b">
+                      <tr>
+                        <th className="px-4 text-left">Item</th>
+                        <th className="p-4 text-right">Quantity</th>
+                        <th className="p-4 text-right">Price</th>
+                        <th className="p-4 text-right">Subtotal</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {Array.isArray(cartItems) &&
-                      cartItems.map((item) => (
-                        <tr key={item._id} className="border-b overflow-auto">
-                          <td>
-                            <Link href={`/product/${item.slug}`}>
-                              <a className="flex items-center gap-1 w-max p-1">
-                                <Image
-                                  src={item.image}
-                                  alt={item.name}
-                                  width={50}
-                                  height={50}
-                                ></Image>
-                                &nbsp;
-                                <span className="break-words overflow-x-auto">
-                                  {item.name}
-                                </span>
-                              </a>
-                            </Link>
-                          </td>
-                          <td className="p-5 text-right">{item.quantity}</td>
-                          <td className="p-5 text-right">₹{item.price}</td>
-                          <td className="p-5 text-right">
-                            ₹{item.price * item.quantity}
-                          </td>
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-                <div className="mt-3">
-                  <Link href="/cart">Edit</Link>
+                    <tbody>
+                      {Array.isArray(cartItems) &&
+                        cartItems.map((item) => (
+                          <tr key={item._id} className="border-b overflow-auto">
+                            <td>
+                              <Link href={`/product/${item.slug}`}>
+                                <a className="flex items-center gap-1 w-max p-1">
+                                  <Image
+                                    src={item.image}
+                                    alt={item.name}
+                                    width={50}
+                                    height={50}
+                                  ></Image>
+                                  &nbsp;
+                                  <span className="break-words overflow-x-auto">
+                                    {item.name}
+                                  </span>
+                                </a>
+                              </Link>
+                            </td>
+                            <td className="p-5 text-right">{item.quantity}</td>
+                            <td className="p-5 text-right">₹{item.price}</td>
+                            <td className="p-5 text-right">
+                              ₹{item.price * item.quantity}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                  <div className="my-3 text-base text-blue-500">
+                    <Link href="/cart">Edit</Link>
+                  </div>
                 </div>
               </div>
             </div>
-
             <div className="card p-5 h-max">
               <h2 className="mb-2 text-lg">Order Summary</h2>
               <ul>
@@ -196,9 +198,14 @@ const PlaceOrder = () => {
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={placeOrderHandler}
-                      className="primary-button w-full"
+                      className="primary-button w-full my-1"
+                      disabled={isLoading}
                     >
-                      Place Order
+                      {isLoading ? (
+                        <LoadingSpinner className="mx-auto w-[1.2rem] h-[1.2rem] text-slate-400 animate-spin dark:text-purple-600 fill-white" />
+                      ) : (
+                        " Place Order"
+                      )}
                     </button>
                   </div>
                 </li>

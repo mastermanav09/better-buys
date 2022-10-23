@@ -86,7 +86,7 @@ a {
 
 .center-loader {
   position: absolute;
-  left: calc((100% - 30px) / 2);
+  left: calc((100% - 25px) / 2);
 }
 
 .alert-error {

@@ -31,7 +31,11 @@ const ProductItem = ({ product, addToCartHandler }) => {
           </a>
         </Link>
         <div>
-          <Rating value={product.rating} readOnly />
+          <Rating
+            value={product.rating}
+            readOnly
+            className="text-xl lg:text-2xl"
+          />
         </div>
         <p className="my-[0.4rem]">{product.brand}</p>
         <p>₹{product.price}</p>

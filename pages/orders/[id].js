@@ -112,9 +112,9 @@ const Order = () => {
         {error && <div className="xs-max:text-sm alert-error">{error}</div>}
       </div>
       {!error && (
-        <div className="grid md:grid-cols-4 md:gap-5">
+        <div className="grid md:grid-cols-4 md:gap-3 lg-max:gap-0 lg-max:grid-cols-1">
           <div className="overflow-x-auto md:col-span-3">
-            <div className="card p-5">
+            <div className="card p-5 text-sm">
               <h2 className="mb-2 text-lg">Shipping Address</h2>
               <div>
                 {order.shippingAddress.fullName},{" "}
@@ -140,7 +140,7 @@ const Order = () => {
               )}
             </div>
 
-            <div className="card p-5">
+            <div className="card p-5 text-sm ">
               <h2 className="mb-2 text-lg">Payment Method</h2>
               <div>{order.paymentMethod}</div>
               {order.isPaid ? (
@@ -160,50 +160,54 @@ const Order = () => {
               )}
             </div>
 
-            <div className="card overflow-x-auto p-5">
+            <div className="card overflow-x-auto p-5 md:col-span-4 xl:col-span-3">
               <h2 className="mb-2 text-lg">Order Items</h2>
-              <table className="min-w-full">
-                <thead className="border-b">
-                  <tr>
-                    <th className="px-4 text-left">Item</th>
-                    <th className="p-4 text-right">Quantity</th>
-                    <th className="p-4 text-right">Price</th>
-                    <th className="p-4 text-right">Subtotal</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {order.orderItems.map((item) => (
-                    <tr key={item._id} className="border-b">
-                      <td>
-                        <Link href={`/product/${item.slug}`}>
-                          <a className="flex items-center">
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              width={50}
-                              height={50}
-                            ></Image>
-                            &nbsp;
-                            {item.name}
-                          </a>
-                        </Link>
-                      </td>
-                      <td className="p-5 text-right">{item.quantity}</td>
-                      <td className="p-5 text-right">₹{item.price}</td>
-                      <td className="p-5 text-right">
-                        ₹{item.price * item.quantity}
-                      </td>
+              <div className="overflow-x-auto text-sm lg:text-sm scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-blue-300 p-0">
+                <table className="min-w-full">
+                  <thead className="border-b">
+                    <tr>
+                      <th className="px-4 text-left">Item</th>
+                      <th className="p-4 text-right">Quantity</th>
+                      <th className="p-4 text-right">Price</th>
+                      <th className="p-4 text-right">Subtotal</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {order.orderItems.map((item) => (
+                      <tr key={item._id} className="border-b overflow-auto">
+                        <td>
+                          <Link href={`/product/${item.slug}`}>
+                            <a className="flex items-center gap-1 w-max p-1">
+                              <Image
+                                src={item.image}
+                                alt={item.name}
+                                width={50}
+                                height={50}
+                              ></Image>
+                              &nbsp;
+                              <span className="break-words overflow-x-auto">
+                                {item.name}
+                              </span>
+                            </a>
+                          </Link>
+                        </td>
+                        <td className="p-5 text-right">{item.quantity}</td>
+                        <td className="p-5 text-right">₹{item.price}</td>
+                        <td className="p-5 text-right">
+                          ₹{item.price * item.quantity}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
-          <div>
+          <div className="w-full">
             <div className="card p-5">
               <h2 className="mb-2 text-lg">Order Summary</h2>
-              <ul>
+              <ul className="text-sm">
                 <li>
                   <div className="mb-2 flex justify-between">
                     <div>Items</div>
@@ -247,7 +251,7 @@ const Order = () => {
                     <div className="w-full">
                       <PaytmButton
                         onClick={initiatePaymentHandler}
-                        isPending={loadingPay}
+                        ispending={loadingPay}
                       />
                     </div>
                   </li>
