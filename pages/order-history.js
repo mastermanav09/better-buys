@@ -49,20 +49,18 @@ const OrderHistory = () => {
                 <tbody>
                   {allOrders.map((order) => (
                     <tr key={order._id} className="border-b">
-                      <td className="p-5">{order._id.substring(20, 24)}</td>
-                      <td className="p-5">
-                        {order.createdAt.substring(0, 10)}
-                      </td>
+                      <td className="p-5">{order._id.substr(20, 24)}</td>
+                      <td className="p-5">{order.createdAt.substr(0, 10)}</td>
                       <td className="p-5">${order.totalPrice}</td>
                       <td className="p-5">
                         {order.isPaid
-                          ? `${order.paidAt.substring(0, 10)}`
+                          ? `${order.paidAt.substr(0, 10)}`
                           : "Not paid"}
                       </td>
 
                       <td className="p-5">
                         {order.isDelivered
-                          ? `${order.deliveredAt.substring(0, 10)}`
+                          ? `${order.deliveredAt.substr(0, 10)}`
                           : "Not delivered"}
                       </td>
 
