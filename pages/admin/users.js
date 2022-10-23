@@ -22,10 +22,10 @@ const Users = () => {
   useEffect(() => {
     if (successDelete) {
       dispatch(adminActions.deleteReset());
-    } else {
+    } else if (users.length == 0) {
       dispatch(fetchUsers());
     }
-  }, [dispatch, successDelete]);
+  }, [dispatch, successDelete, users]);
 
   const deleteHandler = async (userId) => {
     if (!window.confirm("Are you sure you want to delete the user ?")) {
@@ -50,7 +50,7 @@ const Users = () => {
           ) : (
             <div className="my-16">
               <div className="mb-8">
-                <h1 className="text-center text-xl md:text-left md:text-3xl lg:text-4xl align-middle">
+                <h1 className="text-center text-2xl md:text-left md:text-3xl lg:text-4xl align-middle">
                   Users
                 </h1>
               </div>
@@ -68,7 +68,7 @@ const Users = () => {
                   </thead>
                   <tbody>
                     {users.map((user) => (
-                      <tr key={user._id} className="border-b">
+                      <tr key={user._id} className="border-b text-sm">
                         <td className="p-5">{user._id.substr(20, 24)}</td>
                         <td className="p-5">{user.credentials.name}</td>
                         <td className="p-5">{user.credentials.email}</td>
@@ -114,4 +114,4 @@ const Users = () => {
 };
 
 Users.auth = { adminOnly: true };
-export default Users;
+export default React.memo(Users);
