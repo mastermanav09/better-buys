@@ -8,7 +8,7 @@ const PageLoader = () => {
         <h2 className="text-center text-white text-xl font-semibold">
           Loading...
         </h2>
-        <p className="w-1/3 text-center text-white">
+        <p className="w-2/3 text-center text-white text-sm lg:text-base">
           This may take a few seconds, please don&apos;t close this page.
         </p>
       </div>

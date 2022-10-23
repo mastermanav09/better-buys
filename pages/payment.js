@@ -65,23 +65,26 @@ const Payment = () => {
           <h1 className="text-xl font-semibold">Payment Method</h1>
           <Wallet />
         </div>
-        {["Paytm", "Cash On Delivery"].map((payment) => (
-          <div key={payment} className="mb-4">
-            <input
-              name="paymentMethod"
-              className="p-2 outline-none focus:ring-0 cursor-pointer"
-              id={payment}
-              type="radio"
-              checked={selectedPaymentMethod === payment}
-              onChange={() => setSelectedPaymentMethod(payment)}
-            />
-            <label className="p-2" htmlFor={payment}>
-              {payment}
-            </label>
-          </div>
-        ))}
 
-        <div className="my-10 flex justify-between">
+        <div className="px-4 py-5">
+          {["Paytm", "Cash On Delivery"].map((payment) => (
+            <div key={payment} className="mb-4">
+              <input
+                name="paymentMethod"
+                className="p-2 outline-none focus:ring-0 cursor-pointer"
+                id={payment}
+                type="radio"
+                checked={selectedPaymentMethod === payment}
+                onChange={() => setSelectedPaymentMethod(payment)}
+              />
+              <label className="p-2" htmlFor={payment}>
+                {payment}
+              </label>
+            </div>
+          ))}
+        </div>
+
+        <div className="my-5 flex justify-between">
           <button
             onClick={() => router.push("/shipping")}
             type="button"

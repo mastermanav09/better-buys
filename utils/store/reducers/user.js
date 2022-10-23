@@ -213,6 +213,8 @@ export const placeOrder = createAsyncThunk(
       toast.clearWaitingQueue();
       toast.error(getError(error));
     }
+
+    setIsLoading(false);
   }
 );
 

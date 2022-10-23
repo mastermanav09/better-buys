@@ -63,8 +63,8 @@ const Cart = () => {
           </div>
         </div>
       ) : (
-        <div className="grid md:grid-cols-6 xl:grid-cols-4 gap-4 xl:gap-10 ">
-          <div className="overflow-x-auto md:col-span-4 xl:col-span-3 text-xs lg:text-sm scrollbar-thumb-gray-200 scrollbar-thin py-2 md:py-0">
+        <div className="grid md:grid-cols-6 xl:grid-cols-4 gap-4 xl:gap-10">
+          <div className="overflow-x-auto md:col-span-4 xl:col-span-3 text-xs lg:text-sm scrollbar-thin scrollbar-thumb-blue-600 scrollbar-track-blue-300 py-2 md:py-0">
             <table className="min-w-full">
               <thead className="border-b">
                 <tr>

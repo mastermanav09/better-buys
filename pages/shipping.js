@@ -83,13 +83,13 @@ const Shipping = () => {
       </Head>
       <CheckoutWizard activeStep={1} />
 
-      <div className="mt-10 sm:mt-0">
+      <div className="">
         <div className="max-w-4xl mx-auto">
           <div className="flex mb-4 items-center">
             <h1 className="text-xl font-semibold">Add your address</h1>
             <Address />
           </div>
-          <div className="mt-5">
+          <div>
             <form onSubmit={handleSubmit(submitHandler)}>
               <div className="overflow-hidden rounded-md">
                 <div className="px-4 py-5 bg-white sm:p-6">
