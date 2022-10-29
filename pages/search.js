@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import db from "../utils/db";
@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import { getError } from "../utils/error";
 import { getCategoriesAndBrands } from "../utils/store/reducers/product";
 import FilterSidebar from "../components/FilterSidebar";
+import { userActions } from "../utils/store/reducers/user";
 
 const PAGE_SIZE = 8;
 
@@ -65,10 +66,12 @@ const Search = (props) => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
   const { allCategories, allBrands } = useSelector((state) => state.product);
-  const [toggleFilterSidebar, setToggleFilterSidebar] = useState(false);
+  const showFilterSidebar = useSelector(
+    (state) => state.user.ui.showFilterSidebar
+  );
 
-  const closeSidebarHandler = (val) => {
-    setToggleFilterSidebar(val);
+  const toggleFilterSidebarHandler = (val) => {
+    dispatch(userActions.toggleFilterSidebar(val));
   };
 
   const {
@@ -194,9 +197,9 @@ const Search = (props) => {
         <title>Search products</title>
       </Head>
 
-      {toggleFilterSidebar && (
+      {showFilterSidebar && (
         <FilterSidebar
-          closeSidebarHandler={closeSidebarHandler}
+          toggleFilterSidebarHandler={toggleFilterSidebarHandler}
           ratings={ratings}
           allCategories={allCategories}
           allBrands={allBrands}
@@ -280,7 +283,10 @@ const Search = (props) => {
             style={{ strokeWidth: "1.5px" }}
             stroke="currentColor"
             className="w-6 h-6 text-gray-500 sm:hidden mx-1 cursor-pointer ml-auto"
-            onClick={() => closeSidebarHandler(true)}
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleFilterSidebarHandler(true);
+            }}
           >
             <path
               style={{ strokeLinecap: "round", strokeLinejoin: "round" }}

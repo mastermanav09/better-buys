@@ -12,7 +12,7 @@ import {
 import Rating from "@mui/material/Rating";
 
 const FilterSidebar = ({
-  closeSidebarHandler,
+  toggleFilterSidebarHandler,
   ratings,
   allCategories,
   allBrands,
@@ -27,10 +27,13 @@ const FilterSidebar = ({
   prices,
 }) => {
   return (
-    <div className="w-60 h-full shadow-md bg-gray-50 fixed z-50 animate-slideLeft right-0 top-0 bottom-0 overflow-y-auto">
+    <div
+      className="w-60 h-full shadow-md bg-gray-50 fixed z-40 animate-slideLeft right-0 top-0 bottom-0 overflow-y-auto"
+      onClick={(event) => event.stopPropagation()}
+    >
       <Cross
         className="w-5 h-5 text-black mr-auto mt-4 mx-4 cursor-pointer"
-        onClick={() => closeSidebarHandler(false)}
+        onClick={() => toggleFilterSidebarHandler(false)}
       />
 
       <section className="w-60 py-3 flex-col gap-3 block sm:hidden">

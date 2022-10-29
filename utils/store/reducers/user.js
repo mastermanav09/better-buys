@@ -258,6 +258,7 @@ const userSlice = createSlice({
     paymentMethod: "",
     ui: {
       showSidebar: false,
+      showFilterSidebar: false,
     },
   },
 
@@ -291,6 +292,10 @@ const userSlice = createSlice({
 
     toggleSidebar(state, action) {
       state.ui.showSidebar = action.payload;
+    },
+
+    toggleFilterSidebar(state, action) {
+      state.ui.showFilterSidebar = action.payload;
     },
   },
 });

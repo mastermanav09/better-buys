@@ -80,7 +80,9 @@ const Layout = ({ children }) => {
         className="flex min-h-screen flex-col"
         onClick={() => {
           dispatch(adminActions.toggleSidebar(false));
+
           dispatch(userActions.toggleSidebar(false));
+          dispatch(userActions.toggleFilterSidebar(false));
         }}
       >
         <header>
