@@ -4,6 +4,7 @@ import Cross from "./svg/Cross";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "./NavLink";
 import { adminActions } from "../utils/store/reducers/admin";
+import Link from "next/link";
 
 const AdminSidebar = (props) => {
   const dispatch = useDispatch();
@@ -28,18 +29,22 @@ const AdminSidebar = (props) => {
           />
           <div className="text-gray-100 text-xl">
             <div className="p-2.5 my-1 flex items-center ">
-              <div className="font-bold text-gray-200 text-[15px] flex items-center gap-4">
-                <div className="flex items-center">
-                  <Image
-                    src="/images/better_buys.png"
-                    className="rounded-full"
-                    alt="logo"
-                    width={53}
-                    height={50}
-                  ></Image>
-                </div>{" "}
-                <h1 className="text-base md:text-[0.94rem]">Better Buys</h1>
-              </div>
+              <Link href="/">
+                <a className="cursor-pointer">
+                  <div className="font-bold text-gray-200 text-[15px] flex items-center gap-4">
+                    <div className="flex items-center">
+                      <Image
+                        src="/images/better_buys.png"
+                        className="rounded-full"
+                        alt="logo"
+                        width={52}
+                        height={50}
+                      ></Image>
+                    </div>{" "}
+                    <h1 className="text-base md:text-[0.94rem]">Better Buys</h1>
+                  </div>
+                </a>
+              </Link>
             </div>
             <div className="my-2 bg-gray-600 h-[1px]"></div>
           </div>
@@ -71,7 +76,7 @@ const AdminSidebar = (props) => {
       >
         <button
           type="button"
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[0.65rem] px-2 py-2 md:text-xs md:px-3 md:py-2 text-center flex items-center gap-2 focus:bg-blue-800"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-[0.65rem] px-2 py-2 text-xs md:text-[0.8rem] md:px-3 md:py-2 text-center flex items-center gap-2 focus:bg-blue-800"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

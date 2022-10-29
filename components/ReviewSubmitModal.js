@@ -55,8 +55,8 @@ const ReviewSubmitModal = (props) => {
               <h2 className="text-left text-xl">Leave your review</h2>
             </div>
 
-            <div className="my-4">
-              <div className="text-base my-3 flex gap-2">
+            <div className="my-2">
+              <div className="text-base my-2 flex gap-2">
                 <span className="text-sm mt-[0.2rem] sm:block hidden">
                   Rate our product
                 </span>

@@ -174,14 +174,12 @@ const ProductItem = (props) => {
               <button
                 className="primary-button disabled:cursor-default disabled:bg-gray-300 "
                 onClick={addToCartHandler}
-                // disabled={product.countInStock === 0}
               >
                 {product.countInStock === 0 ? "Out of Stock" : "Add to cart"}
               </button>
               <button
                 className="rounded shadow outline-none bg-blue-700 hover:bg-blue-600 active:bg-blue-500 text-[0.7rem] sm:text-xs  text-white cursor-pointer disabled:cursor-default disabled:bg-gray-300 xl:text-[0.8rem]"
                 onClick={buyNowHandler}
-                // disabled={product.countInStock === 0}
               >
                 Buy Now
               </button>
@@ -255,12 +253,6 @@ const ProductItem = (props) => {
 
                 <div className="mb-[0.4rem]">{product.rating} out of 5</div>
               </div>
-
-              {/* <Link href={`#reviews`}>
-                  <a className="text-yellow-500 hover:underline">
-                    {product.numReviews} reviews
-                  </a>
-                </Link> */}
             </div>
 
             <div className="flex flex-col gap-2 my-4">
