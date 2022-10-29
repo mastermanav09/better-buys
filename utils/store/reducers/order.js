@@ -54,8 +54,8 @@ export const initiatePayment = createAsyncThunk(
           },
           handler: {
             notifyMerchant: function (eventName, data) {
-              console.log("notifyMerchant handler function called");
-              console.log("eventName => ", eventName);
+              // console.log("notifyMerchant handler function called");
+              // console.log("eventName => ", eventName);
             },
           },
         };

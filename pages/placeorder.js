@@ -64,8 +64,6 @@ const PlaceOrder = () => {
     return <PageLoader />;
   }
 
-  console.log(isLoading);
-
   return (
     <>
       <Head>

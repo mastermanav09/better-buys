@@ -15,6 +15,7 @@ module.exports = {
 
       animation: {
         slideRight: "slideRight 300ms ease-out 0ms",
+        slideLeft: "slideLeft 300ms ease-out 0ms",
       },
 
       keyframes: {
@@ -22,6 +23,17 @@ module.exports = {
           "0%": {
             opacity: "0",
             transform: "translateX(-100px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateX(0)",
+          },
+        },
+
+        slideLeft: {
+          "0%": {
+            opacity: "0",
+            transform: "translateX(100px)",
           },
           "100%": {
             opacity: "1",
