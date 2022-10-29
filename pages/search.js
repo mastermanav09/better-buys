@@ -5,7 +5,6 @@ import db from "../utils/db";
 import Product from "../models/product";
 import ProductItem from "../components/ProductItem";
 import { useSelector, useDispatch } from "react-redux";
-import dynamic from "next/dynamic";
 import axios from "axios";
 import { cartActions } from "../utils/store/reducers/cart";
 import {
@@ -24,7 +23,7 @@ import { useEffect } from "react";
 import { getError } from "../utils/error";
 import { getCategoriesAndBrands } from "../utils/store/reducers/product";
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 8;
 
 const prices = [
   {
@@ -310,6 +309,10 @@ const Search = (props) => {
                   variant="standard"
                   className="text-sm lg:text-base"
                 >
+                  <MenuItem
+                    value="all"
+                    className="text-sm lg:text-base"
+                  ></MenuItem>
                   <MenuItem value="all" className="text-sm lg:text-base">
                     All
                   </MenuItem>
@@ -397,7 +400,8 @@ const Search = (props) => {
           </div>
         </section>
       </main>
-      <div className="flex justify-center mt-12">
+
+      <div className="flex justify-center mt-8">
         <Pagination
           defaultPage={parseInt(query.page || "1")}
           count={pages}
@@ -420,11 +424,12 @@ export async function getServerSideProps({ query }) {
   const rating = query.rating || "";
   const sort = query.sort || "";
   const searchQuery = query.query || "";
+  const async = require("async");
 
   const queryFilter =
     searchQuery && searchQuery !== "all"
       ? {
-          category: { $regex: searchQuery, $options: "i" },
+          $text: { $search: searchQuery },
         }
       : {};
 
@@ -474,7 +479,7 @@ export async function getServerSideProps({ query }) {
       ? { createdAt: -1 }
       : { _id: -1 };
 
-  const productDocs = await Product.find(
+  const productsRetriveQuery = await Product.find(
     {
       ...queryFilter,
       ...categoryFilter,
@@ -489,13 +494,25 @@ export async function getServerSideProps({ query }) {
     .limit(pageSize)
     .lean();
 
-  const products = productDocs.map(db.convertDocToObj);
+  const countProductsQuery = await Product.find(
+    {
+      ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...brandFilter,
+      ...ratingFilter,
+    },
+    "-reviews"
+  ).countDocuments();
+
+  const products = productsRetriveQuery.map(db.convertDocToObj);
+
   return {
     props: {
       products,
-      countProducts: products.length,
+      countProducts: countProductsQuery,
       page,
-      pages: Math.ceil(products.length / pageSize),
+      pages: Math.ceil(countProductsQuery / pageSize),
     },
   };
 }
