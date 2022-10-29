@@ -39,7 +39,6 @@ const handler = async (req, res) => {
         );
 
         if (!isValidCheckSum) {
-          console.log("Checksum Mismatched");
           res.status(500).send("Some Error Occurred.");
           return;
         }

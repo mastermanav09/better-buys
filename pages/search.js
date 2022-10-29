@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import db from "../utils/db";
@@ -22,6 +22,7 @@ import PageLoader from "../components/svg/PageLoader";
 import { useEffect } from "react";
 import { getError } from "../utils/error";
 import { getCategoriesAndBrands } from "../utils/store/reducers/product";
+import FilterSidebar from "../components/FilterSidebar";
 
 const PAGE_SIZE = 8;
 
@@ -64,6 +65,11 @@ const Search = (props) => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const dispatch = useDispatch();
   const { allCategories, allBrands } = useSelector((state) => state.product);
+  const [toggleFilterSidebar, setToggleFilterSidebar] = useState(false);
+
+  const closeSidebarHandler = (val) => {
+    setToggleFilterSidebar(val);
+  };
 
   const {
     query = "all",
@@ -188,6 +194,24 @@ const Search = (props) => {
         <title>Search products</title>
       </Head>
 
+      {toggleFilterSidebar && (
+        <FilterSidebar
+          closeSidebarHandler={closeSidebarHandler}
+          ratings={ratings}
+          allCategories={allCategories}
+          allBrands={allBrands}
+          categoryHandler={categoryHandler}
+          brandHandler={brandHandler}
+          priceHandler={priceHandler}
+          ratingHandler={ratingHandler}
+          brand={brand}
+          category={category}
+          rating={rating}
+          price={price}
+          prices={prices}
+        />
+      )}
+
       <div className="w-full flex flex-col lg:flex-row mt-5">
         <div className="flex items-center gap-1 text-sm md:text-base xs-max:text-xs my-0.5 lg:my-0">
           {products.length === 0 ? "No" : countProducts}{" "}
@@ -248,6 +272,7 @@ const Search = (props) => {
               </MenuItem>
             </Select>
           </div>
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -255,6 +280,7 @@ const Search = (props) => {
             style={{ strokeWidth: "1.5px" }}
             stroke="currentColor"
             className="w-6 h-6 text-gray-500 sm:hidden mx-1 cursor-pointer ml-auto"
+            onClick={() => closeSidebarHandler(true)}
           >
             <path
               style={{ strokeLinecap: "round", strokeLinejoin: "round" }}
@@ -309,10 +335,6 @@ const Search = (props) => {
                   variant="standard"
                   className="text-sm lg:text-base"
                 >
-                  <MenuItem
-                    value="all"
-                    className="text-sm lg:text-base"
-                  ></MenuItem>
                   <MenuItem value="all" className="text-sm lg:text-base">
                     All
                   </MenuItem>

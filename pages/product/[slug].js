@@ -31,7 +31,7 @@ const ProductItem = (props) => {
   useEffect(() => {
     const getSessionHandler = async () => {
       let session = await getSession();
-      console.log(session);
+
       if (session) {
         setSession(session);
       }
@@ -126,7 +126,7 @@ const ProductItem = (props) => {
       );
     }
   }
-  console.log(session);
+
   return (
     <>
       <Head>
