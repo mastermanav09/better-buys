@@ -87,7 +87,7 @@ const Layout = ({ children }) => {
       >
         <header>
           <nav
-            className="flex h-12 justify-between items-center shadow-md px-2 text-white"
+            className="flex h-12 justify-between items-center shadow-md px-3 text-white"
             style={{ backgroundColor: "#2b3a51" }}
           >
             <div className="flex items-center gap-2">
@@ -151,12 +151,19 @@ const Layout = ({ children }) => {
                 </svg>
               </button>
             </form>{" "}
-            <div className="text-sm md:text-base">
+            <div className="h-full text-sm md:text-base flex items-center">
               <Link href="/cart">
-                <a className="p-2 inline-flex items-center">
-                  <span> Cart</span>
+                <a className="h-full inline-flex items-center relative px-2 md:px-3">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="h-5 w-5 md:w-6 md:h-6"
+                  >
+                    <path d="M2.25 2.25a.75.75 0 000 1.5h1.386c.17 0 .318.114.362.278l2.558 9.592a3.752 3.752 0 00-2.806 3.63c0 .414.336.75.75.75h15.75a.75.75 0 000-1.5H5.378A2.25 2.25 0 017.5 15h11.218a.75.75 0 00.674-.421 60.358 60.358 0 002.96-7.228.75.75 0 00-.525-.965A60.864 60.864 0 005.68 4.509l-.232-.867A1.875 1.875 0 003.636 2.25H2.25zM3.75 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM16.5 20.25a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z" />
+                  </svg>
+
                   {cartItemsCount > 0 && (
-                    <span className="ml-1 rounded-full bg-blue-600 md:px-2 md:py-1 md:text-xs font-bold text-white px-[0.45rem] text-[0.6rem]">
+                    <span className="rounded-full bg-blue-600 leading-[1.3rem] md:leading-[1.4rem] text-[0.55rem] md:text-[0.65rem] font-bold text-white absolute right-0 top-[0.2rem] px-2">
                       {cartItemsCount}
                     </span>
                   )}
@@ -165,7 +172,7 @@ const Layout = ({ children }) => {
               {session?.user ? (
                 <Menu
                   as="div"
-                  className="relative inline-block z-10 text-black"
+                  className="relative inline-block z-10 text-black px-2 md:px-3"
                 >
                   <Menu.Button className="text-white">
                     {status == "loading" ? "loading..." : session.user.name}
