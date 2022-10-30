@@ -28,7 +28,7 @@ const FilterSidebar = ({
 }) => {
   return (
     <div
-      className="w-60 h-full shadow-md bg-gray-50 fixed z-40 animate-slideLeft right-0 top-0 bottom-0 overflow-y-auto"
+      className="w-60 h-full shadow-md bg-gray-50 fixed z-30 animate-slideLeft right-0 top-0 bottom-0 overflow-y-auto"
       onClick={(event) => event.stopPropagation()}
     >
       <Cross
@@ -48,9 +48,9 @@ const FilterSidebar = ({
                 value={category}
                 onChange={categoryHandler}
                 variant="standard"
-                className="text-sm lg:text-base"
+                className="text-xs"
               >
-                <MenuItem value="all" className="text-sm lg:text-base">
+                <MenuItem value="all" className="text-xs">
                   All
                 </MenuItem>
                 {allCategories &&
@@ -60,7 +60,7 @@ const FilterSidebar = ({
                       value={
                         category.charAt(0).toLowerCase() + category.slice(1)
                       }
-                      className="text-sm lg:text-base"
+                      className="text-xs"
                     >
                       {category}
                     </MenuItem>
@@ -78,9 +78,9 @@ const FilterSidebar = ({
                 value={brand}
                 onChange={brandHandler}
                 variant="standard"
-                className="text-sm lg:text-base"
+                className="text-xs"
               >
-                <MenuItem value="all" className="text-sm lg:text-base">
+                <MenuItem value="all" className="text-xs">
                   All
                 </MenuItem>
                 {allBrands &&
@@ -88,7 +88,7 @@ const FilterSidebar = ({
                     <MenuItem
                       key={brand}
                       value={brand.charAt(0).toLowerCase() + brand.slice(1)}
-                      className="text-sm lg:text-base"
+                      className="text-xs"
                     >
                       {brand}
                     </MenuItem>
@@ -106,16 +106,16 @@ const FilterSidebar = ({
                 value={price}
                 onChange={priceHandler}
                 variant="standard"
-                className="text-sm lg:text-base"
+                className="text-xs"
               >
-                <MenuItem value="all" className="text-sm lg:text-base">
+                <MenuItem value="all" className="text-xs">
                   All
                 </MenuItem>
                 {prices.map((price) => (
                   <MenuItem
                     key={price.value}
                     value={price.value}
-                    className="text-sm lg:text-base"
+                    className="text-xs"
                   >
                     {price.name}
                   </MenuItem>
@@ -133,19 +133,15 @@ const FilterSidebar = ({
                 value={rating}
                 onChange={ratingHandler}
                 variant="standard"
-                className="text-sm lg:text-base"
+                className="text-xs"
               >
-                <MenuItem value="all" className="text-sm lg:text-base">
+                <MenuItem value="all" className="text-xs">
                   All
                 </MenuItem>
                 {ratings.map((rating) => (
-                  <MenuItem
-                    key={rating}
-                    value={rating}
-                    className="text-sm lg:text-base"
-                  >
+                  <MenuItem key={rating} value={rating} className="text-xs">
                     <div className="pointer-events-none flex items-center gap-1">
-                      <Rating value={rating} readOnly />
+                      <Rating value={rating} readOnly className="text-xl" />
                       <Typography component="span">&amp; Up</Typography>
                     </div>
                   </MenuItem>

@@ -12,7 +12,7 @@ import {
   Legend,
 } from "chart.js";
 
-import PageLoader from "../../components/svg/PageLoader";
+import PageLoader from "../../components/progress/PageLoader";
 import Link from "next/link";
 import AdminSidebar from "../../components/AdminSidebar";
 import { navLinks } from "../../utils/navlinks";

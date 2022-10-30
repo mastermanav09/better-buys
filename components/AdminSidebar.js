@@ -11,6 +11,7 @@ const AdminSidebar = (props) => {
   const showAdminSidebar = useSelector(
     (state) => state.admin.ui.showAdminSidebar
   );
+
   const { pathname, navLinks } = props;
   const closeSidebarHandler = (val) => {
     dispatch(adminActions.toggleSidebar(val));
@@ -20,7 +21,7 @@ const AdminSidebar = (props) => {
     <>
       {showAdminSidebar && (
         <div
-          className="fixed top-0 bottom-0 left-0 px-4 overflow-y-auto text-center bg-gray-700 z-50  animate-slideRight"
+          className="fixed top-0 bottom-0 left-0 px-4 overflow-y-auto text-center bg-gray-700 z-40  animate-slideRight"
           onClick={(event) => event.stopPropagation()}
         >
           <Cross

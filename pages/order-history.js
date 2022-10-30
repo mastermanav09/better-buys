@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrdersHistory } from "../utils/store/reducers/order";
 import Head from "next/head";
-import PageLoader from "../components/svg/PageLoader";
+import PageLoader from "../components/progress/PageLoader";
 import Link from "next/link";
 import { useState } from "react";
 

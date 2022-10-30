@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import PageLoader from "../../components/svg/PageLoader";
+import PageLoader from "../../components/progress/PageLoader";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -234,7 +234,7 @@ const Order = () => {
                   </div>
                 </li>
 
-                {order.isPaid && (
+                {order.isPaid && order.user === session?.user?._id && (
                   <li className="mt-3">
                     <Link href={`/api/orders/${orderId}/getInvoice`}>
                       <a className="w-full block">
@@ -247,7 +247,7 @@ const Order = () => {
                 )}
 
                 {!order.isPaid && (
-                  <li>
+                  <li className="mt-3">
                     <div className="w-full">
                       <PaytmButton
                         onClick={initiatePaymentHandler}
@@ -257,7 +257,7 @@ const Order = () => {
                   </li>
                 )}
                 {session.user.isAdmin && order.isPaid && !order.isDelivered && (
-                  <li>
+                  <li className="mt-3">
                     <button
                       className="primary-button w-full"
                       onClick={deliverOrderHandler}

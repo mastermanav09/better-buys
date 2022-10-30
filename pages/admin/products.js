@@ -10,7 +10,7 @@ import {
 import { navLinks } from "../../utils/navlinks";
 import { useRouter } from "next/router";
 import AdminSidebar from "../../components/AdminSidebar";
-import PageLoader from "../../components/svg/PageLoader";
+import PageLoader from "../../components/progress/PageLoader";
 import Link from "next/link";
 import LoadingSpinner from "../../components/svg/LoadingSpinner";
 

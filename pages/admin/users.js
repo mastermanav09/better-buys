@@ -6,7 +6,7 @@ import Head from "next/head";
 import AdminSidebar from "../../components/AdminSidebar";
 import { navLinks } from "../../utils/navlinks";
 import { useRouter } from "next/router";
-import PageLoader from "../../components/svg/PageLoader";
+import PageLoader from "../../components/progress/PageLoader";
 import LoadingSpinner from "../../components/svg/LoadingSpinner";
 import Link from "next/link";
 import { adminActions } from "../../utils/store/reducers/admin";
