@@ -10,7 +10,7 @@ import Product from "../../models/product";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Link from "next/link";
-import PageLoader from "../../components/svg/PageLoader";
+import PageLoader from "../../components/progress/PageLoader";
 import { fetchReviews } from "../../utils/store/reducers/product";
 import LoadingSpinner from "../../components/svg/LoadingSpinner";
 import { useEffect } from "react";

@@ -13,7 +13,7 @@ const Sidebar = (props) => {
   };
 
   return (
-    <div className="w-60 h-full shadow-md bg-gray-50 fixed z-50 animate-slideRight">
+    <div className="w-60 h-full shadow-md bg-gray-50 fixed z-40 animate-slideRight">
       <Cross
         className="w-5 h-5 text-black ml-auto mt-4 mx-4 cursor-pointer"
         onClick={() => closeSidebarHandler(false)}

@@ -2,7 +2,7 @@ import React from "react";
 import { useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
-import PageLoader from "../../components/svg/PageLoader";
+import PageLoader from "../../components/progress/PageLoader";
 import AdminSidebar from "../../components/AdminSidebar";
 import { useRouter } from "next/router";
 import { navLinks } from "../../utils/navlinks";

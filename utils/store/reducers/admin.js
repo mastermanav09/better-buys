@@ -278,7 +278,7 @@ export const deliverOrder = createAsyncThunk(
       });
 
       dispatch(orderActions.deliverSuccess(data));
-      toast.success("Order is delivered!");
+      toast.success("Order is on its way!");
     } catch (error) {
       dispatch(orderActions.deliverFail(getError(error)));
       toast.error("Couldn't deliver order.");

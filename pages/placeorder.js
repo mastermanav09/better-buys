@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { placeOrder } from "../utils/store/reducers/user";
-import PageLoader from "../components/svg/PageLoader";
+import PageLoader from "../components/progress/PageLoader";
 import PlaceOrderIcon from "../components/svg/PlaceOrderIcon";
 import { toast } from "react-toastify";
 import LoadingSpinner from "../components/svg/LoadingSpinner";

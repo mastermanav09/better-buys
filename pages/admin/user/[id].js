@@ -1,5 +1,5 @@
 import React from "react";
-import PageLoader from "../../../components/svg/PageLoader";
+import PageLoader from "../../../components/progress/PageLoader";
 import Head from "next/head";
 import AdminSidebar from "../../../components/AdminSidebar";
 import { useRouter } from "next/router";

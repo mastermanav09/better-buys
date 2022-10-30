@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import Rating from "@mui/material/Rating";
-import PageLoader from "../components/svg/PageLoader";
+import PageLoader from "../components/progress/PageLoader";
 import { useEffect } from "react";
 import { getError } from "../utils/error";
 import { getCategoriesAndBrands } from "../utils/store/reducers/product";
@@ -224,7 +224,12 @@ const Search = (props) => {
           {brand !== "all" &&
             " : " + brand.charAt(0).toUpperCase() + brand.slice(1)}
           {price !== "all" &&
-            " : " + price.charAt(0).toUpperCase() + price.slice(1)}
+            " : " +
+              "₹" +
+              price.split("-")[0] +
+              " - " +
+              "₹" +
+              price.split("-")[1]}
           {rating !== "all" && " : Rating " + rating + " & Up"}
           {category !== "all" ||
           brand !== "all" ||
@@ -250,27 +255,27 @@ const Search = (props) => {
           )}
         </div>
         <div className="lg:ml-auto my-0.5 lg:my-0 inline-flex items-center text-sm md:text-base xs-max:text-xs">
-          <span>Sort by</span>
+          <span className="text-xs sm:text-sm">Sort by</span>
           <div className="mx-1.5">
             <Select
               value={sort}
               onChange={sortHandler}
               variant="standard"
-              className="text-sm lg:text-base"
+              className="text-sm"
             >
-              <MenuItem value="featured" className="text-sm lg:text-base">
+              <MenuItem value="featured" className="text-xs sm:text-base">
                 Featured
               </MenuItem>
-              <MenuItem value="lowest" className="text-sm lg:text-base">
+              <MenuItem value="lowest" className="text-xs sm:text-base">
                 Price : Low to High
               </MenuItem>
-              <MenuItem value="highest" className="text-sm lg:text-base">
+              <MenuItem value="highest" className="text-xs sm:text-base">
                 Price : High to Low
               </MenuItem>
-              <MenuItem value="toprated" className="text-sm lg:text-base">
+              <MenuItem value="toprated" className="text-xs sm:text-base">
                 Customer Reviews
               </MenuItem>
-              <MenuItem value="newest" className="text-sm lg:text-base">
+              <MenuItem value="newest" className="text-xs sm:text-base">
                 Newest Arrivals
               </MenuItem>
             </Select>
@@ -282,7 +287,7 @@ const Search = (props) => {
             viewBox="0 0 24 24"
             style={{ strokeWidth: "1.5px" }}
             stroke="currentColor"
-            className="w-6 h-6 text-gray-500 sm:hidden mx-1 cursor-pointer ml-auto"
+            className="w-5 h-5 text-gray-500 sm:hidden mx-1 cursor-pointer ml-auto"
             onClick={(event) => {
               event.stopPropagation();
               toggleFilterSidebarHandler(true);
