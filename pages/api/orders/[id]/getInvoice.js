@@ -58,16 +58,22 @@ const handler = async (req, res) => {
         throw error;
       }
 
-      let dir = `../../../../data/invoices/${user._id}`;
+      let dir = path.join(process.cwd(), "public", "invoices", user._id);
 
       if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+        fs.mkdirSync(dir);
       }
 
       const invoiceName = "invoice-" + orderId + ".pdf";
       const uploadPath = `/invoices/${user._id}`;
 
-      const invoicePath = `../../../../data/invoices/${user._id}/${invoiceName}`;
+      const invoicePath = path.join(
+        process.cwd(),
+        "public",
+        "invoices",
+        user._id,
+        invoiceName
+      );
 
       const pdfDoc = new pdfDocument();
 
