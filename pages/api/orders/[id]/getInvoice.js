@@ -1,8 +1,9 @@
-import { getSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
 import Order from "../../../../models/order";
 import db from "../../../../utils/db";
 import FormData from "form-data";
 import axios from "axios";
+import { authOptions } from "../../auth/[...nextauth]";
 
 const fs = require("fs");
 const path = require("path");
@@ -27,7 +28,7 @@ const handler = async (req, res) => {
     const orderId = req.query.id;
 
     try {
-      const session = await getSession({ req });
+      const session = await getServerSession(req, res, authOptions);
       if (!session) {
         return res.status(401).json({ message: "Sign in required!" });
       }
@@ -58,7 +59,12 @@ const handler = async (req, res) => {
         throw error;
       }
 
-      let dir = path.join(process.cwd(), "public", "invoices", user._id);
+      let dir = null;
+      if (process.env.NODE_ENV === "production") {
+        dir = `/tmp/invoices/${user._id}`;
+      } else {
+        dir = path.join(process.cwd(), "public", "invoices", user._id);
+      }
 
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir);
@@ -67,14 +73,7 @@ const handler = async (req, res) => {
       const invoiceName = "invoice-" + orderId + ".pdf";
       const uploadPath = `/invoices/${user._id}`;
 
-      const invoicePath = path.join(
-        process.cwd(),
-        "public",
-        "invoices",
-        user._id,
-        invoiceName
-      );
-
+      const invoicePath = path.join(dir, invoiceName);
       const pdfDoc = new pdfDocument();
 
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
