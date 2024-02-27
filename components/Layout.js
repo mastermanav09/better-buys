@@ -223,7 +223,7 @@ const Layout = ({ children }) => {
           className="flex justify-center items-center h-10 shadow-inner mt-auto text-white"
           style={{ backgroundColor: "#2b3a51" }}
         >
-          Copyright &copy; 2022 Better Buys
+          Copyright &copy; 2024 Better Buys
         </footer>
       </div>
     </>
