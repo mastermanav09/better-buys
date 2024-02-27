@@ -25,7 +25,7 @@
     "mongoose": "^6.5.3",
     "next": "12.2.5",
     "next-auth": "^4.10.3",
-    "paytmchecksum": "^1.5.0",
+    "paytmchecksum": "^1.5.1",
     "pdfkit": "^0.13.0",
     "react": "18.2.0",
     "react-chartjs-2": "^4.3.1",

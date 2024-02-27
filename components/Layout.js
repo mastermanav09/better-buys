@@ -177,7 +177,7 @@ const Layout = ({ children }) => {
                   <Menu.Button className="text-white">
                     {status == "loading" ? "loading..." : session.user.name}
                   </Menu.Button>
-                  <Menu.Items className="absolute right-0 w-56 origin-top-right shadow-lg bg-white rounded-md text-sm">
+                  <Menu.Items className="absolute right-0 w-64 origin-top-right shadow-lg bg-white rounded-md text-md">
                     <Menu.Item>
                       <DropdownLink className="dropdown-link" href="/profile">
                         Profile

@@ -26,6 +26,12 @@ const handler = async (req, res) => {
         throw error;
       }
 
+      if (order.invoiceUrl) {
+        res.setHeader("Content-Type", "application/pdf");
+        const fileStream = fs.createReadStream(order.invoiceUrl);
+        return fileStream.pipe(res);
+      }
+
       if (!order.isPaid) {
         const error = new Error("Invalid request");
         error.statusCode = 400;
@@ -51,13 +57,8 @@ const handler = async (req, res) => {
         `${user._id}`,
         invoiceName
       );
-      const pdfDoc = new pdfDocument();
 
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${invoiceName}"`
-      );
+      const pdfDoc = new pdfDocument();
 
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
       pdfDoc.pipe(res); // res object is a writable stream
@@ -66,28 +67,66 @@ const handler = async (req, res) => {
         underline: true,
       });
 
-      let totalPrice = 0;
+      pdfDoc.text("\n");
 
       order.orderItems.forEach((item) => {
-        totalPrice += item.quantity * item.price;
         pdfDoc
           .fontSize(12)
           .text(
             item.name +
-              "                                        " +
+              "                                                 " +
               item.quantity +
-              "                                        " +
+              "                                              " +
               "Rs. " +
               item.price +
               "\n"
           );
       });
 
+      pdfDoc.text("\n");
+
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "Items Price" +
+            "                                                                                 " +
+            "Rs. " +
+            order.itemsPrice +
+            "\n"
+        );
+
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "Shipping Price" +
+            "                                                                            " +
+            "Rs. " +
+            order.shippingPrice +
+            "\n"
+        );
+
+      pdfDoc
+        .fontSize(14)
+        .text(
+          "Tax" +
+            "                                                                                              " +
+            "Rs. " +
+            order.taxPrice +
+            "\n"
+        );
+
       pdfDoc.text(
-        "---------------------------------------------------------------------------------------------------------------------\n"
+        "----------------------------------------------------------------------------------------------------\n"
       );
-      pdfDoc.fontSize(13).text("Total Price : Rs " + totalPrice);
+      pdfDoc.text("\n");
+      pdfDoc.fontSize(14).text(`Total Price : Rs ${order.totalPrice}`);
       pdfDoc.end();
+
+      await Order.updateOne({ _id: orderId }, { invoiceUrl: invoicePath });
+
+      res.setHeader("Content-Type", "application/pdf");
+      const fileStream = fs.createReadStream(order.invoiceUrl);
+      return fileStream.pipe(res);
     } catch (error) {
       res.status(error.statusCode || 500).json(error);
     }

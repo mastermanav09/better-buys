@@ -72,7 +72,7 @@ const ProductItem = (props) => {
       toast.clearWaitingQueue();
       return true;
     } catch (error) {
-      toast.error("Cannot add product!");
+      toast.error("Cannot add product! Please Sign in");
     }
   };
 

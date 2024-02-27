@@ -41,6 +41,7 @@ const orderSchema = new Schema(
     isDelivered: { type: Boolean, required: true, default: false },
     paidAt: { type: Date },
     deliveredAt: { type: Date },
+    invoiceUrl: { type: String },
   },
 
   { timestamps: true }

@@ -45,6 +45,7 @@ const handler = async (req, res) => {
         requestType: "Payment",
         mid: process.env.NEXT_PUBLIC_PAYTM_MID,
         orderId: orderId,
+        websiteName: "WEBSTAGING",
         callbackUrl: `/api/orders/${orderId}/pay`,
         txnAmount: {
           value: `${totalPrice}`,
@@ -71,7 +72,6 @@ const handler = async (req, res) => {
         return new Promise((resolve, reject) => {
           var options = {
             hostname: "securegw-stage.paytm.in",
-
             port: 443,
             path: `/theia/api/v1/initiateTransaction?mid=${process.env.NEXT_PUBLIC_PAYTM_MID}&orderId=${orderId}`,
             method: "POST",

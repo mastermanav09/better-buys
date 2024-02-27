@@ -87,6 +87,13 @@ const Order = () => {
     dispatch(deliverOrder({ orderId: order._id }));
   };
 
+  const fetchInvoiceHandler = () => {
+    fetch(`/api/orders/${orderId}/getInvoice`).then((data) => {
+      console.log(data);
+      window.open(data.url);
+    });
+  };
+
   if (loading) {
     return <PageLoader />;
   }
@@ -236,13 +243,12 @@ const Order = () => {
 
                 {order.isPaid && order.user === session?.user?._id && (
                   <li className="mt-3">
-                    <Link href={`/api/orders/${orderId}/getInvoice`}>
-                      <a className="w-full block">
-                        <button className="w-full primary-button">
-                          Download Invoice
-                        </button>
-                      </a>
-                    </Link>
+                    <button
+                      className="w-full primary-button"
+                      onClick={fetchInvoiceHandler}
+                    >
+                      Download Invoice
+                    </button>
                   </li>
                 )}
 
