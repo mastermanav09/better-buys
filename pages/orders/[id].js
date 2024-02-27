@@ -25,6 +25,7 @@ const Order = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const dispatch = useDispatch();
+  const [downloadInvoiceLoader, setDownloadInvoiceLoader] = useState(false);
   const {
     loading,
     order,
@@ -88,10 +89,17 @@ const Order = () => {
   };
 
   const fetchInvoiceHandler = () => {
-    fetch(`/api/orders/${orderId}/getInvoice`).then((data) => {
-      console.log(data);
-      window.open(data.url);
-    });
+    setDownloadInvoiceLoader(true);
+    fetch(`/api/orders/${orderId}/getInvoice`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDownloadInvoiceLoader(false);
+        window.open(data?.invoiceUrl, "_blank");
+      })
+      .catch((error) => {
+        setDownloadInvoiceLoader(false);
+        alert("Can't download invoice." + error.message);
+      });
   };
 
   if (loading) {
@@ -247,7 +255,11 @@ const Order = () => {
                       className="w-full primary-button"
                       onClick={fetchInvoiceHandler}
                     >
-                      Download Invoice
+                      {downloadInvoiceLoader ? (
+                        <LoadingSpinner className="mx-auto w-[1.9rem] h-5 text-slate-400 animate-spin dark:text-purple-600 fill-white" />
+                      ) : (
+                        "Download Invoice"
+                      )}
                     </button>
                   </li>
                 )}

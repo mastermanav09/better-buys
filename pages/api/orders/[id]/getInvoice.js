@@ -1,10 +1,26 @@
 import { getSession } from "next-auth/react";
 import Order from "../../../../models/order";
 import db from "../../../../utils/db";
+import FormData from "form-data";
+import axios from "axios";
 
 const fs = require("fs");
 const path = require("path");
 const pdfDocument = require("pdfkit");
+
+const cloudinary = require("cloudinary").v2;
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+const cloudinaryConfig = {
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+};
 
 const handler = async (req, res) => {
   if (req.method === "GET") {
@@ -27,9 +43,7 @@ const handler = async (req, res) => {
       }
 
       if (order.invoiceUrl) {
-        res.setHeader("Content-Type", "application/pdf");
-        const fileStream = fs.createReadStream(order.invoiceUrl);
-        return fileStream.pipe(res);
+        return res.status(200).json({ invoiceUrl: order.invoiceUrl });
       }
 
       if (!order.isPaid) {
@@ -51,6 +65,8 @@ const handler = async (req, res) => {
       }
 
       const invoiceName = "invoice-" + orderId + ".pdf";
+      const uploadPath = `/invoices/${user._id}`;
+
       const invoicePath = path.join(
         "data",
         "invoices",
@@ -61,7 +77,7 @@ const handler = async (req, res) => {
       const pdfDoc = new pdfDocument();
 
       pdfDoc.pipe(fs.createWriteStream(invoicePath));
-      pdfDoc.pipe(res); // res object is a writable stream
+      // pdfDoc.pipe(res); // res object is a writable stream
 
       pdfDoc.fontSize(26).text("Invoice", {
         underline: true,
@@ -122,11 +138,46 @@ const handler = async (req, res) => {
       pdfDoc.fontSize(14).text(`Total Price : Rs ${order.totalPrice}`);
       pdfDoc.end();
 
-      await Order.updateOne({ _id: orderId }, { invoiceUrl: invoicePath });
+      cloudinary.config(cloudinaryConfig);
+      let uploadedFileUrl = null;
 
-      res.setHeader("Content-Type", "application/pdf");
-      const fileStream = fs.createReadStream(order.invoiceUrl);
-      return fileStream.pipe(res);
+      try {
+        await cloudinary.api.create_folder(uploadPath);
+        const formData = new FormData();
+        formData.append("file", fs.createReadStream(invoicePath));
+        formData.append(
+          "public_id",
+          invoiceName
+            .trim()
+            .replaceAll(" ", "_")
+            .replace(/\.[^.\/]+$/, "")
+        );
+        formData.append("resource_type", "raw");
+        formData.append("folder", uploadPath);
+        formData.append("upload_preset", process.env.CLOUDINARY_UPLOAD_PRESET);
+        const { data } = await axios.post(
+          process.env.UPLOAD_CLOUDINARY_URL,
+          formData
+        );
+
+        if (!data || !data.secure_url) {
+          const error = new Error("Cannot get Invoice!");
+          error.statusCode = 500;
+          throw error;
+        }
+
+        uploadedFileUrl = data.secure_url;
+      } catch (error) {
+        error = JSON.parse(JSON.stringify(error));
+        return res.status(error.status).json({
+          message:
+            "Something went wrong while uploading the file. Please try again",
+        });
+      }
+
+      fs.unlinkSync(invoicePath);
+      await Order.updateOne({ _id: orderId }, { invoiceUrl: uploadedFileUrl });
+      return res.status(200).json({ invoiceUrl: uploadedFileUrl });
     } catch (error) {
       res.status(error.statusCode || 500).json(error);
     }
