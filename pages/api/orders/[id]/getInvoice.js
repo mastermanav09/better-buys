@@ -44,7 +44,7 @@ const handler = async (req, res) => {
         throw error;
       }
 
-      let dir = `./data/invoices/${user._id}`;
+      let dir = `/data/invoices/${user._id}`;
 
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
