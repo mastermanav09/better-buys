@@ -44,19 +44,14 @@ const handler = async (req, res) => {
         throw error;
       }
 
-      let dir = `/data/invoices/${user._id}`;
+      let dir = path.join(process.cwd(), "data", "invoices", user._id);
 
       if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
       }
 
       const invoiceName = "invoice-" + orderId + ".pdf";
-      const invoicePath = path.join(
-        "data",
-        "invoices",
-        `${user._id}`,
-        invoiceName
-      );
+      const invoicePath = path.join(dir, invoiceName);
 
       const pdfDoc = new pdfDocument();
 
@@ -125,7 +120,7 @@ const handler = async (req, res) => {
       await Order.updateOne({ _id: orderId }, { invoiceUrl: invoicePath });
 
       res.setHeader("Content-Type", "application/pdf");
-      const fileStream = fs.createReadStream(order.invoiceUrl);
+      const fileStream = fs.createReadStream(invoicePath);
       return fileStream.pipe(res);
     } catch (error) {
       res.status(error.statusCode || 500).json(error);
